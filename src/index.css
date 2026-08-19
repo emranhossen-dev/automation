@@ -961,16 +961,18 @@ body {
 /* Desktop Grid Layout Optimization (>=1024px) */
 @media (min-width: 1024px) {
   .main-container {
-    max-width: 1360px;
-    margin: 0 auto;
-    padding: 1.5rem 1.25rem;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 1rem 1rem !important;
   }
 
   .single-input-layout {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    gap: 1rem;
     align-items: start;
+    width: 100% !important;
   }
 
   .results-wrapper {
@@ -2218,15 +2220,35 @@ body {
   color: #94a3b8;
 }
 
-/* Product Details Textarea (Auto-expanding, Zero Inner Scrollbars) */
-.raw-input-textarea {
+/* Product Details Textarea (Smooth Scrolling + Sleek 5px Scrollbar) */
+.raw-input-textarea,
+.form-textarea {
   min-height: 280px !important;
   font-size: 0.9rem !important;
   line-height: 1.6 !important;
   padding: 1rem !important;
-  overflow: hidden !important;
-  resize: none !important;
-  transition: height 0.15s ease-out !important;
+  overflow-y: auto !important;
+  resize: vertical !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(99, 102, 241, 0.5) rgba(15, 23, 42, 0.5) !important;
+}
+
+.raw-input-textarea::-webkit-scrollbar,
+.form-textarea::-webkit-scrollbar {
+  display: block !important;
+  width: 5px !important;
+}
+
+.raw-input-textarea::-webkit-scrollbar-track,
+.form-textarea::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5) !important;
+  border-radius: 4px !important;
+}
+
+.raw-input-textarea::-webkit-scrollbar-thumb,
+.form-textarea::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.6) !important;
+  border-radius: 4px !important;
 }
 
 /* Tutorial Responsive Mobile Optimizations */
