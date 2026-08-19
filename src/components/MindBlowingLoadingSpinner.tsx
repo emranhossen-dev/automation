@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Cpu, Zap, Wand2 } from 'lucide-react';
+import { Cpu, Wand2 } from 'lucide-react';
 
 interface LoadingProps {
   progressState: {
@@ -53,7 +53,6 @@ export const MindBlowingLoadingSpinner: React.FC<LoadingProps> = ({ progressStat
           </span>
           {progressState?.strategyName && (
             <span className="cyber-strategy-badge">
-              <Zap size={12} className="icon-gold" />
               Angle: {progressState.strategyName}
             </span>
           )}
@@ -65,7 +64,6 @@ export const MindBlowingLoadingSpinner: React.FC<LoadingProps> = ({ progressStat
 
         {/* Dynamic AI Ticker Text */}
         <div className="cyber-phrase-box">
-          <Sparkles size={14} className="icon-gold animate-pulse" />
           <span className="cyber-phrase-text">{AI_PHRASES[phraseIdx]}</span>
         </div>
 

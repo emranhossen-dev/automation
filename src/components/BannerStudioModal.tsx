@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Download, Sparkles, X, Check, Tag, Type } from 'lucide-react';
+import { Download, X, Check, Tag, Type } from 'lucide-react';
 import Swal from 'sweetalert2';
 
 interface BannerStudioModalProps {
@@ -21,7 +21,7 @@ export const BannerStudioModal: React.FC<BannerStudioModalProps> = ({
 }) => {
   const [productCode, setProductCode] = useState('CODE: GB-101');
   const [priceTag, setPriceTag] = useState('৳1,200 (SAVE 20%)');
-  const [customTag, setCustomTag] = useState('🔥 HOT DEAL');
+  const [customTag, setCustomTag] = useState('HOT DEAL');
   const [position, setPosition] = useState<'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'bottom-bar'>('bottom-bar');
   const [theme, setTheme] = useState<'neon' | 'hot-deal' | 'luxury' | 'glass'>('neon');
   const [includeLogo, setIncludeLogo] = useState(true);
@@ -278,7 +278,6 @@ export const BannerStudioModal: React.FC<BannerStudioModalProps> = ({
       <div className="modal-container banner-studio-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <div className="modal-title-group">
-            <Sparkles className="icon-gold" size={20} />
             <h2>AI Banner Studio</h2>
           </div>
           <button className="btn-close" onClick={onClose}>
@@ -319,13 +318,12 @@ export const BannerStudioModal: React.FC<BannerStudioModalProps> = ({
 
             <div className="form-group">
               <label className="form-label">
-                <Sparkles size={14} className="icon-blue" />
                 <span>Custom Badge Label</span>
               </label>
               <input
                 type="text"
                 className="form-input"
-                placeholder="e.g. 🔥 HOT DEAL"
+                placeholder="e.g. HOT DEAL"
                 value={customTag}
                 onChange={(e) => setCustomTag(e.target.value)}
               />
@@ -354,10 +352,10 @@ export const BannerStudioModal: React.FC<BannerStudioModalProps> = ({
                   value={theme}
                   onChange={(e) => setTheme(e.target.value as any)}
                 >
-                  <option value="neon">🔮 Cyber Neon Indigo</option>
-                  <option value="hot-deal">🔥 Hot Offer Red</option>
-                  <option value="luxury">👑 Luxury Gold</option>
-                  <option value="glass">💎 Minimal Glass</option>
+                  <option value="neon">Cyber Neon Indigo</option>
+                  <option value="hot-deal">Hot Offer Red</option>
+                  <option value="luxury">Luxury Gold</option>
+                  <option value="glass">Minimal Glass</option>
                 </select>
               </div>
             </div>

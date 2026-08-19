@@ -16,11 +16,7 @@ import {
   ExternalLink,
   Loader2,
   CheckCircle,
-  AlertCircle,
-  Zap,
-  AlignLeft,
-  FileText,
-  Sparkles
+  AlertCircle
 } from 'lucide-react';
 
 interface PostCardProps {
@@ -165,21 +161,18 @@ export const PostCard: React.FC<PostCardProps> = ({
     if (post.lengthType === 'short') {
       return (
         <span className="badge-length short" title="Short Copy">
-          <Zap size={11} />
           <span>Short</span>
         </span>
       );
     } else if (post.lengthType === 'detailed') {
       return (
         <span className="badge-length detailed" title="Detailed Copy">
-          <FileText size={11} />
           <span>Detailed</span>
         </span>
       );
     }
     return (
       <span className="badge-length medium" title="Medium Length Copy">
-        <AlignLeft size={11} />
         <span>Medium</span>
       </span>
     );
@@ -264,7 +257,6 @@ export const PostCard: React.FC<PostCardProps> = ({
                 onClick={() => setSelectedBannerImg({ idx, url })}
                 title="Add Code / Price Badge to Image"
               >
-                <Sparkles size={11} className="icon-gold" />
                 <span>Banner</span>
               </button>
             </div>

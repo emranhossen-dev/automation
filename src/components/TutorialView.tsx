@@ -1,13 +1,11 @@
 import React from 'react';
 import {
-  Sparkles,
   UploadCloud,
   FileText,
   Sliders,
   Copy,
   Share2,
   ShieldCheck,
-  Zap,
   CheckCircle2,
   ArrowRight,
   PlayCircle,
@@ -83,7 +81,6 @@ export const TutorialView: React.FC<TutorialViewProps> = ({ onStartCreating }) =
       <div className="tutorial-hero-card">
         <div className="tutorial-hero-content">
           <span className="hero-pill-badge">
-            <Sparkles size={14} className="icon-gold" />
             সহজ গাইডলাইন ও স্ট্যাপ-বাই-স্ট্যাপ ব্যবহারে নির্দেশনা
           </span>
           <h2>কীভাবে Post Maker ব্যবহার করে খুব সহজে সেলস পোস্ট তৈরি করবেন?</h2>
@@ -129,7 +126,6 @@ export const TutorialView: React.FC<TutorialViewProps> = ({ onStartCreating }) =
       {/* Summary Box */}
       <div className="tutorial-summary-box">
         <div className="summary-item">
-          <Zap size={18} className="icon-gold" />
           <div>
             <h4>কপিরাইটিং স্ট্র্যাটেজি</h4>
             <p>AIDA ও PAS সেলস ফ্রেমওয়ার্কে চমৎকার পোস্ট</p>

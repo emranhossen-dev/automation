@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { SingleRawInput, PostLanguage, PostLengthPreference, ImageInput } from '../types';
-import { Languages, Link as LinkIcon, Store, Square, AlignLeft, Send, UploadCloud, X, Layers, Sparkles } from 'lucide-react';
+import { Languages, Link as LinkIcon, Store, Square, AlignLeft, Send, UploadCloud, X, Layers } from 'lucide-react';
 import { BannerStudioModal } from './BannerStudioModal';
 import Swal from 'sweetalert2';
 
@@ -156,7 +156,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({
             </label>
             {input.imageFiles && input.imageFiles.length > 0 && (
               <span className="badge-photo-count">
-                <Sparkles size={12} className="icon-gold" />
                 {input.imageFiles.length} {input.imageFiles.length === 1 ? 'Photo' : 'Photos'}
               </span>
             )}
@@ -207,7 +206,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                       disabled={isLoading}
                       title="Make Promo Banner / Add Code"
                     >
-                      <Sparkles size={12} className="icon-gold" />
                       <span>Banner</span>
                     </button>
 
