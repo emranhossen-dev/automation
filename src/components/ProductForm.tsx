@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { SingleRawInput, PostLanguage, PostLengthPreference, ImageInput } from '../types';
-import { Languages, Link as LinkIcon, Store, Square, AlignLeft, Send, Image as ImageIcon, X, Plus, Layers } from 'lucide-react';
+import { Languages, Link as LinkIcon, Store, Square, AlignLeft, Send, UploadCloud, X, Layers, Sparkles } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 interface ProductFormProps {
   input: SingleRawInput;
@@ -23,14 +24,16 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   onStop,
   isLoading,
 }) => {
-  const handleMultipleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
+  const [isDragging, setIsDragging] = useState(false);
+
+  const processImageFiles = (files: File[]) => {
+    const validImages = files.filter((f) => f.type.startsWith('image/'));
+    if (validImages.length === 0) return;
 
     const newImages: ImageInput[] = [];
     let processed = 0;
 
-    files.forEach((file) => {
+    validImages.forEach((file) => {
       const mimeType = file.type || 'image/jpeg';
       const reader = new FileReader();
 
@@ -38,23 +41,79 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         const result = reader.result as string;
         const base64 = result.split(',')[1] || '';
         newImages.push({
-          id: `img-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+          id: `img-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
           base64,
           mimeType,
           previewUrl: result,
         });
 
         processed++;
-        if (processed === files.length) {
+        if (processed === validImages.length) {
           setInput((prev) => ({
             ...prev,
             imageFiles: [...(prev.imageFiles || []), ...newImages],
           }));
+
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: `Added ${newImages.length} ${newImages.length === 1 ? 'Product Photo' : 'Product Photos'}!`,
+            showConfirmButton: false,
+            timer: 2000,
+            background: '#1e293b',
+            color: '#fff',
+          });
         }
       };
 
       reader.readAsDataURL(file);
     });
+  };
+
+  const handleMultipleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      processImageFiles(files);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isDragging) setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      processImageFiles(Array.from(e.dataTransfer.files));
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
+    const clipboardFiles: File[] = [];
+
+    if (e.clipboardData.files && e.clipboardData.files.length > 0) {
+      Array.from(e.clipboardData.files).forEach((f) => {
+        if (f.type.startsWith('image/')) {
+          clipboardFiles.push(f);
+        }
+      });
+    }
+
+    if (clipboardFiles.length > 0) {
+      processImageFiles(clipboardFiles);
+    }
   };
 
   const handleRemoveSingleImage = (idToRemove: string) => {
@@ -65,14 +124,15 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   };
 
   return (
-    <div className="card-glass form-container compact-padding full-width-card">
-
-
+    <div
+      className="card-glass form-container compact-padding full-width-card"
+      onPaste={handlePaste}
+    >
       <form onSubmit={(e) => { e.preventDefault(); onGenerate(); }} className="form-body">
-        {/* MANDATORY FIELD 1: Page Name (Default: gadgetbro) */}
+        {/* MANDATORY FIELD 1: Page Name */}
         <div className="form-group">
           <label className="form-label">
-            <Store size={14} />
+            <Store size={14} className="icon-indigo" />
             <span>Facebook Page / Business Name (Default: gadgetbro)</span>
           </label>
           <input
@@ -85,47 +145,74 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           />
         </div>
 
-        {/* MULTIPLE IMAGE UPLOAD FIELD */}
+        {/* REDESIGNED DRAG & DROP + CLIPBOARD IMAGE UPLOAD FIELD */}
         <div className="form-group">
-          <label className="form-label">
-            <ImageIcon size={14} />
-            <span>Upload Product Photos (Optional - Select multiple images for AI vision analysis!)</span>
-          </label>
+          <div className="label-row-with-badge">
+            <label className="form-label">
+              <UploadCloud size={15} className="icon-indigo" />
+              <span>Product Photos (Drag & Drop or Paste with Ctrl+V)</span>
+            </label>
+            {input.imageFiles && input.imageFiles.length > 0 && (
+              <span className="badge-photo-count">
+                <Sparkles size={12} className="icon-gold" />
+                {input.imageFiles.length} {input.imageFiles.length === 1 ? 'Photo' : 'Photos'} Attached
+              </span>
+            )}
+          </div>
 
-          <div className="multi-image-upload-wrapper">
-            <div className="images-preview-strip">
-              {input.imageFiles && input.imageFiles.map((img) => (
-                <div key={img.id} className="multi-image-item">
-                  <img src={img.previewUrl} alt="Product Thumb" className="multi-uploaded-thumb" />
-                  <button
-                    type="button"
-                    className="btn-remove-thumb"
-                    onClick={() => handleRemoveSingleImage(img.id)}
-                    disabled={isLoading}
-                    title="Remove image"
-                  >
-                    <X size={12} />
-                  </button>
+          <div
+            className={`modern-dropzone ${isDragging ? 'dragging-active' : ''}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleMultipleImageUpload}
+              disabled={isLoading}
+              id="multi-product-image-input"
+              className="file-input-hidden"
+            />
+
+            <label htmlFor="multi-product-image-input" className="dropzone-inner-content">
+              <div className="dropzone-icon-ring">
+                <UploadCloud size={24} className="icon-cloud-pulse" />
+              </div>
+              <div className="dropzone-text-group">
+                <span className="dropzone-main-text">
+                  <strong>Click to upload</strong> or drag & drop product photos
+                </span>
+                <span className="dropzone-sub-text">
+                  Supports PNG, JPG, WEBP • Press <strong>Ctrl + V</strong> anywhere to paste images from clipboard
+                </span>
+              </div>
+            </label>
+          </div>
+
+          {/* Uploaded Images Preview Gallery */}
+          {input.imageFiles && input.imageFiles.length > 0 && (
+            <div className="modern-preview-gallery">
+              {input.imageFiles.map((img, idx) => (
+                <div key={img.id} className="preview-thumb-card card-glass">
+                  <img src={img.previewUrl} alt={`Product photo ${idx + 1}`} className="preview-thumb-img" />
+                  <div className="thumb-overlay">
+                    <button
+                      type="button"
+                      className="btn-delete-thumb"
+                      onClick={() => handleRemoveSingleImage(img.id)}
+                      disabled={isLoading}
+                      title="Delete photo"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                  <span className="thumb-idx-badge">#{idx + 1}</span>
                 </div>
               ))}
-
-              <div className="image-upload-add-card">
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleMultipleImageUpload}
-                  disabled={isLoading}
-                  id="multi-product-image-input"
-                  className="file-input-hidden"
-                />
-                <label htmlFor="multi-product-image-input" className="file-input-add-label">
-                  <Plus size={18} className="icon-gold" />
-                  <span>{input.imageFiles && input.imageFiles.length > 0 ? 'Add More Photos' : 'Upload Product Photos'}</span>
-                </label>
-              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* OPTIONAL FIELD 3: Raw Product Details Textarea */}
@@ -136,14 +223,14 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           <textarea
             className="form-textarea raw-input-textarea"
             rows={4}
-            placeholder="Paste or type raw product specs, offer price, delivery notes (optional)..."
+            placeholder="Paste or type raw product specs, offer price, delivery notes, or press Ctrl+V to paste content..."
             value={input.rawText}
             onChange={(e) => setInput((prev) => ({ ...prev, rawText: e.target.value }))}
             disabled={isLoading}
           />
         </div>
 
-        {/* Controls Grid: Number of Posts, Length Preference, Language & Contact Link */}
+        {/* Controls Grid */}
         <div className="form-grid-4">
           <div className="form-group">
             <label className="form-label">
@@ -217,7 +304,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           </div>
         </div>
 
-        {/* Generate / Stop Action Row */}
+        {/* Action Row */}
         <div className="action-row">
           {!isLoading ? (
             <button
