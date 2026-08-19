@@ -265,7 +265,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                 title="Add Code / Price Badge to Image"
               >
                 <Sparkles size={11} className="icon-gold" />
-                <span>Banner Studio</span>
+                <span>Banner</span>
               </button>
             </div>
           ))}
@@ -324,13 +324,13 @@ export const PostCard: React.FC<PostCardProps> = ({
         >
           {isCopied ? (
             <>
-              <Check size={16} />
-              <span>Copied!</span>
+              <Check size={15} />
+              <span>Copied</span>
             </>
           ) : (
             <>
-              <Copy size={16} />
-              <span>1-Click Copy</span>
+              <Copy size={15} />
+              <span>Copy</span>
             </>
           )}
         </button>
@@ -342,13 +342,13 @@ export const PostCard: React.FC<PostCardProps> = ({
         >
           {isPublishing ? (
             <>
-              <Loader2 className="spin-icon" size={16} />
+              <Loader2 className="spin-icon" size={15} />
               <span>Posting...</span>
             </>
           ) : (
             <>
-              <Send size={16} />
-              <span>Post to FB Page</span>
+              <Send size={15} />
+              <span>FB Post</span>
             </>
           )}
         </button>

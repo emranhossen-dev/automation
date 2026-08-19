@@ -374,12 +374,12 @@ export const BannerStudioModal: React.FC<BannerStudioModalProps> = ({
             Cancel
           </button>
           <button type="button" className="btn-secondary" onClick={handleDownload}>
-            <Download size={15} />
-            <span>Download Banner (PNG)</span>
+            <Download size={14} />
+            <span>Download</span>
           </button>
           <button type="button" className="btn-primary" onClick={handleApplyToPost}>
-            <Check size={15} />
-            <span>Save & Use Banner</span>
+            <Check size={14} />
+            <span>Save</span>
           </button>
         </div>
       </div>

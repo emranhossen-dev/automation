@@ -2335,3 +2335,87 @@ body {
 .attached-img-item {
   position: relative;
 }
+
+/* Mobile Responsiveness & Strict 1-Line Non-wrapping Enforcement */
+@media (max-width: 640px) {
+  .header-container {
+    padding: 0.5rem 0.5rem !important;
+  }
+
+  .header-content {
+    gap: 0.15rem !important;
+  }
+
+  .brand-title {
+    font-size: 0.95rem !important;
+  }
+
+  .inline-tabs {
+    gap: 0.05rem !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .tab-btn {
+    padding: 0.2rem 0.35rem !important;
+    font-size: 0.725rem !important;
+    gap: 0.15rem !important;
+    white-space: nowrap !important;
+  }
+
+  .banner-studio-modal {
+    width: 98vw !important;
+    padding: 0.75rem !important;
+    max-height: 94vh !important;
+    overflow-y: auto !important;
+  }
+
+  .banner-studio-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  .canvas-wrapper {
+    max-height: 240px !important;
+  }
+
+  .banner-live-canvas {
+    max-height: 220px !important;
+  }
+
+  .modal-footer {
+    padding-top: 0.5rem !important;
+    gap: 0.25rem !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .modal-footer button {
+    padding: 0.35rem 0.55rem !important;
+    font-size: 0.725rem !important;
+    white-space: nowrap !important;
+  }
+
+  .automation-actions-bar {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.35rem !important;
+  }
+
+  .btn-action {
+    padding: 0.55rem 0.4rem !important;
+    font-size: 0.75rem !important;
+    white-space: nowrap !important;
+  }
+}
+
+/* Force Non-wrapping everywhere on action buttons and badges */
+.btn-action,
+.btn-primary,
+.btn-secondary,
+.tab-btn,
+.badge-strategy,
+.badge-length,
+.badge-photo-count,
+.cyber-strategy-badge,
+.cyber-live-badge {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
