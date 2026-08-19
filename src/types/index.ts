@@ -10,6 +10,7 @@ export interface BusinessInfo {
   phone: string;
   whatsapp: string;
   defaultOrderNote: string;
+  logoUrl?: string; // Custom Store / Brand Logo (Base64 or URL)
 }
 
 export interface ImageInput {
@@ -42,6 +43,7 @@ export interface GeneratedPost {
   language: PostLanguage;
   createdAt: string;
   imageUrls?: string[];
+  logoUrl?: string;
 }
 
 export interface FacebookConfig {

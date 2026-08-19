@@ -26,6 +26,7 @@ interface PostCardProps {
   fbConfig: FacebookConfig;
   fbPageName?: string;
   fbPagePicture?: string;
+  storeLogoUrl?: string;
   onSavePost?: (post: GeneratedPost) => void;
   onOpenSettings?: () => void;
 }
@@ -35,6 +36,7 @@ export const PostCard: React.FC<PostCardProps> = ({
   fbConfig,
   fbPageName = 'gadgetbro',
   fbPagePicture,
+  storeLogoUrl,
   onSavePost,
   onOpenSettings,
 }) => {
@@ -212,8 +214,8 @@ export const PostCard: React.FC<PostCardProps> = ({
       {/* FB Feed Header */}
       <div className="fb-header">
         <div className="fb-avatar">
-          {fbPagePicture ? (
-            <img src={fbPagePicture} alt={fbPageName} />
+          {storeLogoUrl || post.logoUrl || fbPagePicture ? (
+            <img src={storeLogoUrl || post.logoUrl || fbPagePicture} alt={fbPageName} />
           ) : (
             <div className="avatar-placeholder">{(fbPageName || 'gadgetbro').charAt(0).toUpperCase()}</div>
           )}

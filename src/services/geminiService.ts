@@ -10,31 +10,31 @@ export interface StrategyDefinition {
 export const STRATEGIES: StrategyDefinition[] = [
   {
     id: 'hard-sell',
-    name: 'Direct Hard Sell & Offer',
+    name: 'Direct Offer',
     guide: 'Use a high-converting direct offer style (AIDA framework). Focus heavily on price, limited-time discount, special offer, urgency, and immediate call to action.',
     defaultLength: 'short',
   },
   {
     id: 'problem-solving',
-    name: 'Problem-Solving (PAS)',
+    name: 'Problem-Solving',
     guide: 'Use the PAS (Problem - Agitate - Solution) framework. Highlight customer pain points, why it is frustrating, and present this product as the ultimate solution.',
     defaultLength: 'medium',
   },
   {
     id: 'storytelling',
-    name: 'Storytelling & Lifestyle',
+    name: 'Storytelling',
     guide: 'Use a storytelling / lifestyle approach. Describe a real-life scenario or daily experience where someone uses this product, making it feel relatable and desirable.',
     defaultLength: 'detailed',
   },
   {
     id: 'feature-spotlight',
-    name: 'Feature & Specs Spotlight',
+    name: 'Feature Spotlight',
     guide: 'Focus heavily on key features, materials, specifications, build quality, and why this product stands out from competitors.',
     defaultLength: 'short',
   },
   {
     id: 'customer-review',
-    name: 'Customer Trust & Review',
+    name: 'Customer Review',
     guide: 'Format the post like a recommendation / social proof highlighting customer trust, satisfaction guarantee, and proven results.',
     defaultLength: 'medium',
   },

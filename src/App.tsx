@@ -6,9 +6,11 @@ import { ProductForm } from './components/ProductForm';
 import { PostCard } from './components/PostCard';
 import { SettingsModal } from './components/SettingsModal';
 import { SettingsView } from './components/SettingsView';
+import { TutorialView } from './components/TutorialView';
+import { MindBlowingLoadingSpinner } from './components/MindBlowingLoadingSpinner';
 import { verifyFBPageConnection } from './services/facebookService';
 import Swal from 'sweetalert2';
-import { Trash2, ShieldCheck, Zap, Layers, FileText, Loader2 } from 'lucide-react';
+import { Trash2, ShieldCheck, Zap, Layers, FileText } from 'lucide-react';
 import './index.css';
 
 export function App() {
@@ -27,6 +29,7 @@ export function App() {
       phone: '',
       whatsapp: '',
       defaultOrderNote: '',
+      logoUrl: '',
     };
   });
 
@@ -51,7 +54,7 @@ export function App() {
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const [activeTab, setActiveTab] = useState<'create' | 'history' | 'settings'>('create');
+  const [activeTab, setActiveTab] = useState<'create' | 'history' | 'settings' | 'tutorial'>('create');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -323,17 +326,9 @@ export function App() {
                 )}
               </div>
 
-              {/* Cool Glowing Loading Spinner inside Preview Area */}
+              {/* Mind-Blowing Holographic AI Loading Spinner */}
               {isLoading && (
-                <div className="cool-loading-spinner-box card-glass">
-                  <div className="glowing-spinner-ring">
-                    <Loader2 size={40} className="spin-icon-glowing" />
-                  </div>
-                  <h4>AI Engine Crafting Posts...</h4>
-                  <p>
-                    [{progressState?.percentage || 0}%] {progressState?.strategyName || ''}
-                  </p>
-                </div>
+                <MindBlowingLoadingSpinner progressState={progressState} />
               )}
 
               {generatedPosts.length > 0 ? (
@@ -345,6 +340,7 @@ export function App() {
                       fbConfig={fbConfig}
                       fbPageName={input.pageName.trim() || fbPageName || 'gadgetbro'}
                       fbPagePicture={fbPagePicture}
+                      storeLogoUrl={businessInfo.logoUrl}
                       onSavePost={handleSavePost}
                       onOpenSettings={() => setActiveTab('settings')}
                     />
@@ -378,7 +374,12 @@ export function App() {
           </div>
         )}
 
-        {/* Tab 2: Saved Posts */}
+        {/* Tab 2: Tutorial Step-by-Step Bangla Guide */}
+        {activeTab === 'tutorial' && (
+          <TutorialView onStartCreating={() => setActiveTab('create')} />
+        )}
+
+        {/* Tab 3: Saved Posts */}
         {activeTab === 'history' && (
           <div className="history-container">
             <div className="section-heading">
@@ -409,6 +410,7 @@ export function App() {
                       fbConfig={fbConfig}
                       fbPageName={input.pageName.trim() || fbPageName || 'gadgetbro'}
                       fbPagePicture={fbPagePicture}
+                      storeLogoUrl={businessInfo.logoUrl}
                       onSavePost={handleSavePost}
                       onOpenSettings={() => setActiveTab('settings')}
                     />
@@ -419,7 +421,7 @@ export function App() {
           </div>
         )}
 
-        {/* Tab 3: Config - Direct Inline Full Settings Form */}
+        {/* Tab 4: Config Settings */}
         {activeTab === 'settings' && (
           <SettingsView
             fbConfig={fbConfig}

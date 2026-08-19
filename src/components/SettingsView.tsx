@@ -133,6 +133,48 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             Save your store details here so you never have to re-type page name, website, phone or WhatsApp for products!
           </p>
 
+          {/* Store Logo Upload Field */}
+          <div className="form-group">
+            <label className="form-label">Store / Brand Logo (Optional)</label>
+            <div className="logo-upload-row">
+              {tempBusiness.logoUrl ? (
+                <div className="logo-preview-box">
+                  <img src={tempBusiness.logoUrl} alt="Store Logo Preview" />
+                  <button
+                    type="button"
+                    className="btn-remove-logo"
+                    onClick={() => setTempBusiness({ ...tempBusiness, logoUrl: '' })}
+                    title="Remove Logo"
+                  >
+                    ×
+                  </button>
+                </div>
+              ) : (
+                <div className="logo-placeholder-box">No Logo</div>
+              )}
+
+              <input
+                type="file"
+                accept="image/*"
+                id="store-logo-file-input"
+                className="file-input-hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      setTempBusiness((prev) => ({ ...prev, logoUrl: reader.result as string }));
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+              />
+              <label htmlFor="store-logo-file-input" className="btn-secondary btn-upload-logo">
+                <span>{tempBusiness.logoUrl ? 'Change Store Logo' : 'Upload Store Logo'}</span>
+              </label>
+            </div>
+          </div>
+
           <div className="form-grid-2">
             <div className="form-group">
               <label className="form-label">Business / Page Name (Default: gadgetbro)</label>

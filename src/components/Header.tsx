@@ -1,10 +1,10 @@
 import React from 'react';
-import { Home, Bookmark, Settings } from 'lucide-react';
+import { Home, Bookmark, Settings, BookOpen } from 'lucide-react';
 
 interface HeaderProps {
   onOpenSettings?: () => void;
-  activeTab: 'create' | 'history' | 'settings';
-  setActiveTab: (tab: 'create' | 'history' | 'settings') => void;
+  activeTab: 'create' | 'history' | 'settings' | 'tutorial';
+  setActiveTab: (tab: 'create' | 'history' | 'settings' | 'tutorial') => void;
   savedCount: number;
 }
 
@@ -27,8 +27,17 @@ export const Header: React.FC<HeaderProps> = ({
           <h1 className="brand-title">Post Maker</h1>
         </div>
 
-        {/* Right: Saved & Settings Only */}
+        {/* Right: Tutorial, Saved & Settings */}
         <div className="tab-navigation inline-tabs">
+          <button
+            className={`tab-btn ${activeTab === 'tutorial' ? 'active' : ''}`}
+            onClick={() => setActiveTab('tutorial')}
+            title="Step-by-Step Bangla Tutorial"
+          >
+            <BookOpen size={15} className="icon-gold" />
+            <span className="tab-label">Tutorial</span>
+          </button>
+
           <button
             className={`tab-btn ${activeTab === 'history' ? 'active' : ''}`}
             onClick={() => setActiveTab('history')}
