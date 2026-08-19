@@ -61,7 +61,7 @@ export const generateSingleFBPost = async (
     import.meta.env.VITE_PROXY_URL ||
     (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
       ? 'http://localhost:5000/api/generate'
-      : '/api/generate');
+      : 'https://automation-server.vercel.app/api/generate');
 
   const promptText = buildSinglePostPrompt(input, strategyDef, businessInfo);
   const models = ['gemini-3.6-flash', 'gemini-2.5-flash', 'gemini-1.5-flash'];
