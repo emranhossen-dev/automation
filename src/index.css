@@ -2270,18 +2270,21 @@ body {
 
 /* AI Banner Studio Modal & Canvas CSS */
 .banner-studio-modal {
-  max-width: 960px !important;
-  width: 95% !important;
+  max-width: 820px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .banner-studio-grid {
   display: grid;
-  grid-template-columns: 340px 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
   margin: 1rem 0;
+  width: 100% !important;
+  box-sizing: border-box !important;
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 }
 
@@ -2289,10 +2292,11 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
-  background: rgba(15, 23, 42, 0.6);
-  padding: 1rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-color);
+  background: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .checkbox-row {
@@ -2444,7 +2448,7 @@ body {
   }
 
   .studio-controls-panel {
-    padding: 0.65rem !important;
+    padding: 0 !important;
     width: 100% !important;
     box-sizing: border-box !important;
   }
