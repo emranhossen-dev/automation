@@ -83,7 +83,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       });
 
       if (!tempBusiness.pageName) {
-        setTempBusiness((prev) => ({ ...prev, pageName: res.pageInfo?.name || '' }));
+        setTempBusiness((prev) => ({ ...prev, pageName: res.pageInfo?.name || 'gadgetbro' }));
       }
     }
   };
@@ -133,11 +133,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
             <div className="form-grid-2">
               <div className="form-group">
-                <label className="form-label">Business / Page Name</label>
+                <label className="form-label">Business / Page Name (Default: gadgetbro)</label>
                 <input
                   type="text"
                   className="form-input"
-                  placeholder="e.g. Urban Trends BD"
+                  placeholder="gadgetbro"
                   value={tempBusiness.pageName}
                   onChange={(e) => setTempBusiness({ ...tempBusiness, pageName: e.target.value })}
                 />
@@ -193,14 +193,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
           <hr className="divider" />
 
-          {/* Section 1: Gemini API Key */}
+          {/* Section 1: Gemini API Key Setup */}
           <div className="settings-section">
             <div className="section-title">
               <Cpu size={18} />
-              <h3>1. Google Gemini AI Key (Free)</h3>
+              <h3>1. Your Personal Google Gemini AI Key</h3>
             </div>
             <p className="section-desc">
-              To get a free key, visit{' '}
+              New users get 3 free test generations. Enter your own free Gemini API Key from{' '}
               <a
                 href="https://aistudio.google.com/"
                 target="_blank"
@@ -208,13 +208,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 className="inline-link"
               >
                 Google AI Studio <ExternalLink size={12} />
-              </a>
-              .
+              </a>{' '}
+              for unlimited generations!
             </p>
             <input
               type="password"
               className="form-input"
-              placeholder="Paste your Gemini API key here..."
+              placeholder="Paste your Gemini API key here (starts with AIzaSy...)"
               value={tempGeminiKey}
               onChange={(e) => setTempGeminiKey(e.target.value)}
             />
@@ -320,13 +320,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
             {showGuide && (
               <div className="guide-content">
-                <h4>Gemini API Key (Free):</h4>
+                <h4>Gemini API Key (100% Free):</h4>
                 <ol>
                   <li>Go to <a href="https://aistudio.google.com/" target="_blank" rel="noreferrer">aistudio.google.com</a></li>
                   <li>Sign in with Google and click <strong>Create API Key</strong>.</li>
                 </ol>
 
-                <h4>Facebook Page Access Token (Free):</h4>
+                <h4>Facebook Page Access Token (100% Free):</h4>
                 <ol>
                   <li>Go to <a href="https://developers.facebook.com/tools/explorer/" target="_blank" rel="noreferrer">Meta Graph API Explorer</a></li>
                   <li>Select your Page and add <code>pages_manage_posts</code> permission.</li>

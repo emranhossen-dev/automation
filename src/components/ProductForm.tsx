@@ -1,6 +1,6 @@
 import React from 'react';
-import type { SingleRawInput, PostLanguage, BusinessInfo, PostLengthPreference } from '../types';
-import { Languages, FileText, Link as LinkIcon, Building2, Store, Square, AlignLeft, Send, Loader2, Image, X } from 'lucide-react';
+import type { SingleRawInput, PostLanguage, BusinessInfo, PostLengthPreference, ImageInput } from '../types';
+import { Languages, FileText, Link as LinkIcon, Building2, Store, Square, AlignLeft, Send, Image as ImageIcon, X, Plus, Layers, Settings } from 'lucide-react';
 
 interface ProductFormProps {
   input: SingleRawInput;
@@ -24,49 +24,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   onGenerate,
   onStop,
   isLoading,
-  progressState,
   businessInfo,
   onOpenSettings,
 }) => {
-  const loadPreset = (presetType: 'fashion' | 'gadget' | 'beauty') => {
-    if (presetType === 'fashion') {
-      setInput((prev) => ({
-        ...prev,
-        pageName: prev.pageName || businessInfo.pageName || 'Men Style BD',
-        rawText: `Product: Premium 100% Organic Linen Shirt (Men Linen Shirt)
-Size: M, L, XL, XXL
-Color: White, Navy Blue, Olive Green
-Regular Price: 1450 BDT
-Offer Price: 990 BDT
-Key Features: Highly breathable, sweat resistant, skin friendly, non-fading fabric.
-Delivery: Cash on Delivery available all over Bangladesh (60 BDT inside Dhaka, 120 BDT outside Dhaka).`,
-        language: 'bn',
-      }));
-    } else if (presetType === 'gadget') {
-      setInput((prev) => ({
-        ...prev,
-        pageName: prev.pageName || businessInfo.pageName || 'Gadget Zone BD',
-        rawText: `Product: TWS Airbuds Pro ANC (Bass Boosted)
-Features: Active Noise Cancellation, 30 Hours Total Battery Backup, Type-C Fast Charging, IPX5 Water & Sweat Resistant, Crystal Clear Call Quality
-Regular Price: 2500 BDT
-Offer Price: 1650 BDT
-Warranty: 6 Months Replacement Guarantee`,
-        language: 'bn',
-      }));
-    } else if (presetType === 'beauty') {
-      setInput((prev) => ({
-        ...prev,
-        pageName: prev.pageName || businessInfo.pageName || 'Glow Cosmetics BD',
-        rawText: `Product: Organic Vitamin C Glowing Face Serum
-Ingredients: Organic Orange Extract + Niacinamide
-Benefits: Brightens skin in 14 days, reduces spots and sunburn marks. Dermatologist tested.
-Price: 850 BDT (Regular 1200 BDT)
-Delivery: Free Home Delivery!`,
-        language: 'bn',
-      }));
-    }
-  };
-
   const handleAppendBusinessInfo = () => {
     const parts = [];
     if (businessInfo.pageName) parts.push(`Page: ${businessInfo.pageName}`);
@@ -80,7 +40,7 @@ Delivery: Free Home Delivery!`,
       return;
     }
 
-    if (businessInfo.pageName && !input.pageName) {
+    if (businessInfo.pageName && (!input.pageName || input.pageName === 'gadgetbro')) {
       setInput((prev) => ({ ...prev, pageName: businessInfo.pageName }));
     }
 
@@ -91,31 +51,45 @@ Delivery: Free Home Delivery!`,
     }));
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleMultipleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
-    const mimeType = file.type || 'image/jpeg';
-    const reader = new FileReader();
+    const newImages: ImageInput[] = [];
+    let processed = 0;
 
-    reader.onloadend = () => {
-      const result = reader.result as string;
-      const base64 = result.split(',')[1] || '';
-      setInput((prev) => ({
-        ...prev,
-        imageFile: {
+    files.forEach((file) => {
+      const mimeType = file.type || 'image/jpeg';
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        const base64 = result.split(',')[1] || '';
+        newImages.push({
+          id: `img-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
           base64,
           mimeType,
           previewUrl: result,
-        },
-      }));
-    };
+        });
 
-    reader.readAsDataURL(file);
+        processed++;
+        if (processed === files.length) {
+          setInput((prev) => ({
+            ...prev,
+            imageFiles: [...(prev.imageFiles || []), ...newImages],
+          }));
+        }
+      };
+
+      reader.readAsDataURL(file);
+    });
   };
 
-  const handleRemoveImage = () => {
-    setInput((prev) => ({ ...prev, imageFile: undefined }));
+  const handleRemoveSingleImage = (idToRemove: string) => {
+    setInput((prev) => ({
+      ...prev,
+      imageFiles: prev.imageFiles?.filter((img) => img.id !== idToRemove),
+    }));
   };
 
   const hasBusinessData =
@@ -126,92 +100,88 @@ Delivery: Free Home Delivery!`,
 
   return (
     <div className="card-glass form-container compact-padding full-width-card">
+      {/* Header Row: Title on Left, Configure button on Right */}
       <div className="form-header">
         <div className="form-title-group">
           <FileText className="icon-gold" size={18} />
           <h2>Post Generator Input</h2>
         </div>
 
-        <div className="preset-group">
-          <span className="preset-label">Samples:</span>
-          <button type="button" className="btn-preset" onClick={() => loadPreset('fashion')} disabled={isLoading}>
-            Shirt
-          </button>
-          <button type="button" className="btn-preset" onClick={() => loadPreset('gadget')} disabled={isLoading}>
-            Airbuds
-          </button>
-          <button type="button" className="btn-preset" onClick={() => loadPreset('beauty')} disabled={isLoading}>
-            Serum
-          </button>
-
+        <div className="header-action-group">
           <button
             type="button"
             className={`btn-preset btn-preset-business ${hasBusinessData ? 'active' : ''}`}
-            onClick={handleAppendBusinessInfo}
+            onClick={hasBusinessData ? handleAppendBusinessInfo : onOpenSettings}
             disabled={isLoading}
-            title={hasBusinessData ? 'Append Saved Store Contact Info' : 'Click to setup store info'}
+            title={hasBusinessData ? 'Append Saved Store Contact Info' : 'Click to configure store info'}
           >
-            <Building2 size={12} />
-            <span>{hasBusinessData ? '+ Add Saved Store Info' : '+ Setup Store Info'}</span>
+            {hasBusinessData ? <Building2 size={13} /> : <Settings size={13} />}
+            <span>{hasBusinessData ? '+ Add Store Info' : 'Configure'}</span>
           </button>
         </div>
       </div>
 
       <form onSubmit={(e) => { e.preventDefault(); onGenerate(); }} className="form-body">
-        {/* MANDATORY FIELD 1: Page Name */}
+        {/* MANDATORY FIELD 1: Page Name (Default: gadgetbro) */}
         <div className="form-group">
           <label className="form-label">
             <Store size={14} />
-            <span>Facebook Page / Business Name * (Mandatory)</span>
+            <span>Facebook Page / Business Name (Default: gadgetbro)</span>
           </label>
           <input
             type="text"
             className="form-input"
-            placeholder="e.g. My E-Commerce Store"
+            placeholder="gadgetbro"
             value={input.pageName}
             onChange={(e) => setInput((prev) => ({ ...prev, pageName: e.target.value }))}
-            required
             disabled={isLoading}
           />
         </div>
 
-        {/* Product Image Upload Field */}
+        {/* MULTIPLE IMAGE UPLOAD FIELD */}
         <div className="form-group">
           <label className="form-label">
-            <Image size={14} />
-            <span>Upload Product Photo (Optional - AI will analyze the image visually to generate posts!)</span>
+            <ImageIcon size={14} />
+            <span>Upload Product Photos (Optional - Select multiple images for AI vision analysis!)</span>
           </label>
 
-          {!input.imageFile ? (
-            <div className="image-upload-dropzone">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                disabled={isLoading}
-                id="product-image-input"
-                className="file-input-hidden"
-              />
-              <label htmlFor="product-image-input" className="file-input-label">
-                <Image size={20} className="icon-gold" />
-                <span>Click or Drag Product Photo Here to Upload</span>
-              </label>
-            </div>
-          ) : (
-            <div className="image-preview-card">
-              <img src={input.imageFile.previewUrl} alt="Product Preview" className="uploaded-thumb" />
-              <div className="image-info">
-                <span>Product Photo Uploaded</span>
-                <button type="button" className="btn-remove-img" onClick={handleRemoveImage} disabled={isLoading}>
-                  <X size={14} />
-                  <span>Remove</span>
-                </button>
+          <div className="multi-image-upload-wrapper">
+            <div className="images-preview-strip">
+              {input.imageFiles && input.imageFiles.map((img) => (
+                <div key={img.id} className="multi-image-item">
+                  <img src={img.previewUrl} alt="Product Thumb" className="multi-uploaded-thumb" />
+                  <button
+                    type="button"
+                    className="btn-remove-thumb"
+                    onClick={() => handleRemoveSingleImage(img.id)}
+                    disabled={isLoading}
+                    title="Remove image"
+                  >
+                    <X size={12} />
+                  </button>
+                </div>
+              ))}
+
+              <div className="image-upload-add-card">
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleMultipleImageUpload}
+                  disabled={isLoading}
+                  id="multi-product-image-input"
+                  className="file-input-hidden"
+                />
+                <label htmlFor="multi-product-image-input" className="file-input-add-label">
+                  <Plus size={18} className="icon-gold" />
+                  <span>{input.imageFiles && input.imageFiles.length > 0 ? 'Add More Photos' : 'Upload Product Photos'}</span>
+                </label>
               </div>
             </div>
-          )}
+          </div>
         </div>
 
-        {/* OPTIONAL FIELD 2: Raw Product Details Textarea */}
+        {/* OPTIONAL FIELD 3: Raw Product Details Textarea */}
         <div className="form-group">
           <label className="form-label">
             <span>Product Details / Raw Notes (Optional - Paste product details, prices, specs)</span>
@@ -226,11 +196,31 @@ Delivery: Free Home Delivery!`,
           />
         </div>
 
-        {/* Controls Row */}
-        <div className="form-grid-3">
+        {/* Controls Grid: Number of Posts, Length Preference, Language & Contact Link */}
+        <div className="form-grid-4">
           <div className="form-group">
             <label className="form-label">
-              <AlignLeft size={14} /> <span>Post Length Preference</span>
+              <Layers size={14} /> <span>Number of Posts</span>
+            </label>
+            <select
+              className="form-select"
+              value={input.postCount || 1}
+              onChange={(e) =>
+                setInput((prev) => ({ ...prev, postCount: parseInt(e.target.value, 10) || 1 }))
+              }
+              disabled={isLoading}
+            >
+              <option value={1}>1 Post (Default)</option>
+              <option value={2}>2 Posts</option>
+              <option value={3}>3 Posts</option>
+              <option value={4}>4 Posts</option>
+              <option value={5}>5 Posts</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">
+              <AlignLeft size={14} /> <span>Post Length</span>
             </label>
             <select
               className="form-select"
@@ -240,8 +230,8 @@ Delivery: Free Home Delivery!`,
               }
               disabled={isLoading}
             >
-              <option value="short">Short & Punchy (Quick 4-5 lines for mobile)</option>
-              <option value="balanced">Balanced Mix (2 Short, 2 Medium, 1 Detailed)</option>
+              <option value="short">Short & Punchy (4-5 lines)</option>
+              <option value="balanced">Balanced Mix</option>
               <option value="detailed">Detailed & In-Depth</option>
             </select>
           </div>
@@ -259,6 +249,7 @@ Delivery: Free Home Delivery!`,
               disabled={isLoading}
             >
               <option value="bn">Bengali (বাংলা)</option>
+              <option value="bn-en-mix">Bangla & English Mix</option>
               <option value="banglish">Banglish</option>
               <option value="en">English</option>
             </select>
@@ -266,7 +257,7 @@ Delivery: Free Home Delivery!`,
 
           <div className="form-group">
             <label className="form-label">
-              <LinkIcon size={14} /> <span>Additional Contact / Link</span>
+              <LinkIcon size={14} /> <span>Contact / Link</span>
             </label>
             <input
               type="text"
@@ -279,38 +270,25 @@ Delivery: Free Home Delivery!`,
           </div>
         </div>
 
-        {/* Unified Generate & Progress Bar Row with Side Stop Button */}
+        {/* Generate / Stop Action Row */}
         <div className="action-row">
           {!isLoading ? (
             <button
               type="submit"
               className="btn-primary btn-generate"
-              disabled={!input.pageName.trim()}
             >
               <Send size={16} />
-              <span>Generate 5 Post Variations</span>
+              <span>Generate {input.postCount || 1} {input.postCount === 1 ? 'Post' : 'Posts'}</span>
             </button>
           ) : (
-            <div className="unified-progress-bar-card">
-              <div className="progress-fill-bg" style={{ width: `${progressState?.percentage || 0}%` }} />
-              
-              <div className="progress-text-content">
-                <Loader2 className="spin-icon" size={16} />
-                <span>
-                  [{progressState?.percentage || 0}%] Generating {progressState?.current || 0}/{progressState?.total || 5}: {progressState?.strategyName || ''}
-                </span>
-              </div>
-
-              <button
-                type="button"
-                className="btn-stop-side"
-                onClick={onStop}
-                title="Cancel Generation"
-              >
-                <Square size={12} fill="currentColor" />
-                <span>Stop</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              className="btn-danger btn-stop"
+              onClick={onStop}
+            >
+              <Square size={16} fill="currentColor" />
+              <span>Stop Generation (Cancel)</span>
+            </button>
           )}
         </div>
       </form>

@@ -5,9 +5,10 @@ import { Header } from './components/Header';
 import { ProductForm } from './components/ProductForm';
 import { PostCard } from './components/PostCard';
 import { SettingsModal } from './components/SettingsModal';
+import { SettingsView } from './components/SettingsView';
 import { verifyFBPageConnection } from './services/facebookService';
 import Swal from 'sweetalert2';
-import { Trash2, ArrowRight, ShieldCheck, Zap, Layers, FileText } from 'lucide-react';
+import { Trash2, ShieldCheck, Zap, Layers, FileText, Loader2 } from 'lucide-react';
 import './index.css';
 
 export function App() {
@@ -21,7 +22,7 @@ export function App() {
       }
     }
     return {
-      pageName: '',
+      pageName: 'gadgetbro',
       websiteUrl: '',
       phone: '',
       whatsapp: '',
@@ -30,10 +31,11 @@ export function App() {
   });
 
   const [input, setInput] = useState<SingleRawInput>({
-    pageName: businessInfo.pageName || '',
+    pageName: businessInfo.pageName || 'gadgetbro',
     rawText: '',
     language: 'bn',
     postLength: 'short',
+    postCount: 1, // Default 1 post
     ctaValue: '',
   });
 
@@ -55,12 +57,11 @@ export function App() {
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const [geminiKey, setGeminiKey] = useState<string>(() => {
-    return (
-      localStorage.getItem('gemini_api_key') ||
-      import.meta.env.VITE_GEMINI_API_KEY ||
-      import.meta.env.GEMINI_API_KEY ||
-      ''
-    );
+    return localStorage.getItem('gemini_api_key') || '';
+  });
+
+  const [systemUsageCount, setSystemUsageCount] = useState<number>(() => {
+    return parseInt(localStorage.getItem('system_api_usage_count') || '0', 10);
   });
 
   const [fbConfig, setFbConfig] = useState<FacebookConfig>(() => {
@@ -75,7 +76,7 @@ export function App() {
     return { pageId: '', accessToken: '', isConnected: false };
   });
 
-  const [fbPageName, setFbPageName] = useState<string>(businessInfo.pageName || 'My Business Page');
+  const [fbPageName, setFbPageName] = useState<string>(businessInfo.pageName || 'gadgetbro');
   const [fbPagePicture, setFbPagePicture] = useState<string | undefined>(undefined);
 
   // Auto load saved posts from localStorage
@@ -105,7 +106,7 @@ export function App() {
     if (fbConfig.pageId && fbConfig.accessToken) {
       verifyFBPageConnection(fbConfig.pageId, fbConfig.accessToken).then((res) => {
         if (res.success && res.pageInfo) {
-          const name = res.pageInfo.name || businessInfo.pageName || 'My Business Page';
+          const name = res.pageInfo.name || businessInfo.pageName || 'gadgetbro';
           setFbPageName(name);
           setFbPagePicture(res.pageInfo.pictureUrl);
           setFbConfig((prev) => ({ ...prev, isConnected: true }));
@@ -139,15 +140,35 @@ export function App() {
   };
 
   const handleGenerate = async () => {
+    const hasCustomKey = Boolean(geminiKey.trim());
+
+    // Check system API usage limit (Max 3 free tries without custom key)
+    if (!hasCustomKey && systemUsageCount >= 3) {
+      Swal.fire({
+        title: 'Free Trial Limit Reached (3/3)',
+        text: 'You have used all 3 free trial post generations. Please enter your own free Gemini API Key in Config/Settings to continue generating unlimited posts!',
+        icon: 'warning',
+        confirmButtonText: 'Add Free API Key',
+        confirmButtonColor: '#6366f1',
+        background: '#1e293b',
+        color: '#fff',
+      }).then(() => {
+        setActiveTab('settings');
+      });
+      return;
+    }
+
     setIsLoading(true);
     setErrorMessage(null);
     setGeneratedPosts([]); // Clear previous posts for live streaming
     abortControllerRef.current = new AbortController();
 
-    const total = STRATEGIES.length;
+    const countToGenerate = Math.min(Math.max(input.postCount || 1, 1), 5);
+    const selectedStrategies = STRATEGIES.slice(0, countToGenerate);
+
     setProgressState({
       current: 0,
-      total,
+      total: countToGenerate,
       percentage: 0,
       strategyName: 'Initializing AI Engine...',
     });
@@ -157,32 +178,34 @@ export function App() {
         document.getElementById('generated-posts-container')?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
 
-      // Progressive Stream Loop with Percentage calculation
-      for (let i = 0; i < total; i++) {
+      // Increment system usage count if using fallback system key
+      if (!hasCustomKey) {
+        const newCount = systemUsageCount + 1;
+        setSystemUsageCount(newCount);
+        localStorage.setItem('system_api_usage_count', newCount.toString());
+      }
+
+      // Progressive Stream Loop for selected number of posts
+      for (let i = 0; i < countToGenerate; i++) {
         if (abortControllerRef.current?.signal.aborted) {
           break;
         }
 
-        const strat = STRATEGIES[i];
+        const strat = selectedStrategies[i];
         const currentNum = i + 1;
-        const currentPercentage = Math.round((i / total) * 100);
+        const currentPercentage = Math.round((i / countToGenerate) * 100);
 
         setProgressState({
           current: currentNum,
-          total,
+          total: countToGenerate,
           percentage: currentPercentage,
           strategyName: strat.name,
         });
 
-        // User Settings Key takes Priority 1, fallback to env
-        const activeKey =
-          geminiKey.trim() ||
-          localStorage.getItem('gemini_api_key') ||
-          import.meta.env.VITE_GEMINI_API_KEY ||
-          import.meta.env.GEMINI_API_KEY;
+        const activeKey = geminiKey.trim() || import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY;
 
         const post = await generateSingleFBPost(
-          input,
+          { ...input, pageName: input.pageName.trim() || 'gadgetbro' },
           strat,
           businessInfo,
           activeKey,
@@ -196,8 +219,8 @@ export function App() {
         setGeneratedPosts((prev) => [...prev, post]);
         setProgressState({
           current: currentNum,
-          total,
-          percentage: Math.round((currentNum / total) * 100),
+          total: countToGenerate,
+          percentage: Math.round((currentNum / countToGenerate) * 100),
           strategyName: strat.name,
         });
       }
@@ -207,7 +230,7 @@ export function App() {
           toast: true,
           position: 'top-end',
           icon: 'success',
-          title: 'All 5 Post Variations Ready!',
+          title: `Generated ${countToGenerate} ${countToGenerate === 1 ? 'Post' : 'Posts'} Successfully!`,
           showConfirmButton: false,
           timer: 2500,
           background: '#1e293b',
@@ -229,7 +252,7 @@ export function App() {
         color: '#fff',
       });
       if (msg.includes('API Key')) {
-        setIsSettingsOpen(true);
+        setActiveTab('settings');
       }
     } finally {
       setIsLoading(false);
@@ -280,7 +303,7 @@ export function App() {
               isLoading={isLoading}
               progressState={progressState}
               businessInfo={businessInfo}
-              onOpenSettings={() => setIsSettingsOpen(true)}
+              onOpenSettings={() => setActiveTab('settings')}
             />
 
             {/* Generated Posts Section */}
@@ -290,11 +313,30 @@ export function App() {
                   <Layers size={18} className="icon-gold" />
                   <h3>
                     {generatedPosts.length > 0
-                      ? `Generated Posts (${generatedPosts.length}/${STRATEGIES.length} Variations Ready)`
+                      ? `Generated Posts (${generatedPosts.length}/${input.postCount || 1} Ready)`
                       : 'Generated Facebook Posts'}
                   </h3>
                 </div>
+
+                {!geminiKey.trim() && (
+                  <span className="trial-badge">
+                    Free Trial Usage: {systemUsageCount}/3
+                  </span>
+                )}
               </div>
+
+              {/* Cool Glowing Loading Spinner inside Preview Area */}
+              {isLoading && (
+                <div className="cool-loading-spinner-box card-glass">
+                  <div className="glowing-spinner-ring">
+                    <Loader2 size={40} className="spin-icon-glowing" />
+                  </div>
+                  <h4>AI Engine Crafting Posts...</h4>
+                  <p>
+                    [{progressState?.percentage || 0}%] {progressState?.strategyName || ''}
+                  </p>
+                </div>
+              )}
 
               {generatedPosts.length > 0 ? (
                 <div className="multi-posts-grid">
@@ -303,34 +345,36 @@ export function App() {
                       key={post.id}
                       post={post}
                       fbConfig={fbConfig}
-                      fbPageName={input.pageName || fbPageName}
+                      fbPageName={input.pageName.trim() || fbPageName || 'gadgetbro'}
                       fbPagePicture={fbPagePicture}
                       onSavePost={handleSavePost}
-                      onOpenSettings={() => setIsSettingsOpen(true)}
+                      onOpenSettings={() => setActiveTab('settings')}
                     />
                   ))}
                 </div>
               ) : (
-                <div className="empty-preview-card card-glass">
-                  <div className="empty-icon-box">
-                    <FileText size={32} />
-                  </div>
-                  <h3>No Posts Generated Yet</h3>
-                  <p>
-                    Enter your Page Name above and click <strong>"Generate 5 Post Variations"</strong> to see live responses.
-                  </p>
+                !isLoading && (
+                  <div className="empty-preview-card card-glass">
+                    <div className="empty-icon-box">
+                      <FileText size={32} />
+                    </div>
+                    <h3>No Posts Generated Yet</h3>
+                    <p>
+                      Enter your Page Name above and click <strong>"Generate {input.postCount || 1} {input.postCount === 1 ? 'Post' : 'Posts'}"</strong> to see live responses.
+                    </p>
 
-                  <div className="features-mini-list">
-                    <div className="feature-item">
-                      <Zap size={14} />
-                      <span>Live progressive stream with inline percentage progress & Stop button</span>
-                    </div>
-                    <div className="feature-item">
-                      <ShieldCheck size={14} />
-                      <span>1-Click Copy and Direct Facebook Page Publishing</span>
+                    <div className="features-mini-list">
+                      <div className="feature-item">
+                        <Zap size={14} />
+                        <span>Support multiple product photo uploads & custom post count (1 to 5)</span>
+                      </div>
+                      <div className="feature-item">
+                        <ShieldCheck size={14} />
+                        <span>1-Click Copy and Direct Facebook Page Publishing</span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )
               )}
             </div>
           </div>
@@ -365,10 +409,10 @@ export function App() {
                     <PostCard
                       post={post}
                       fbConfig={fbConfig}
-                      fbPageName={input.pageName || fbPageName}
+                      fbPageName={input.pageName.trim() || fbPageName || 'gadgetbro'}
                       fbPagePicture={fbPagePicture}
                       onSavePost={handleSavePost}
-                      onOpenSettings={() => setIsSettingsOpen(true)}
+                      onOpenSettings={() => setActiveTab('settings')}
                     />
                   </div>
                 ))}
@@ -377,25 +421,20 @@ export function App() {
           </div>
         )}
 
-        {/* Tab 3: Config */}
+        {/* Tab 3: Config - Direct Inline Full Settings Form */}
         {activeTab === 'settings' && (
-          <div className="tab-settings-container card-glass">
-            <h2>API & Store Settings</h2>
-            <p>Configure your Store Details, Gemini AI Key, and Facebook Page Access Tokens.</p>
-
-            <button
-              className="btn-primary"
-              onClick={() => setIsSettingsOpen(true)}
-              style={{ marginTop: '1rem' }}
-            >
-              <span>Open Settings Dialog</span>
-              <ArrowRight size={16} />
-            </button>
-          </div>
+          <SettingsView
+            fbConfig={fbConfig}
+            setFbConfig={setFbConfig}
+            geminiKey={geminiKey}
+            setGeminiKey={setGeminiKey}
+            businessInfo={businessInfo}
+            setBusinessInfo={setBusinessInfo}
+          />
         )}
       </main>
 
-      {/* Settings Modal */}
+      {/* Settings Modal (kept for popups if triggered) */}
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}

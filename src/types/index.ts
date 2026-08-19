@@ -1,8 +1,8 @@
 export type MarketingStrategy = 'problem-solving' | 'hard-sell' | 'storytelling' | 'feature-spotlight' | 'customer-review';
 
-export type PostLanguage = 'bn' | 'banglish' | 'en';
+export type PostLanguage = 'bn' | 'bn-en-mix' | 'banglish' | 'en';
 
-export type PostLengthPreference = 'balanced' | 'short' | 'detailed';
+export type PostLengthPreference = 'short' | 'balanced' | 'detailed';
 
 export interface BusinessInfo {
   pageName: string;
@@ -13,6 +13,7 @@ export interface BusinessInfo {
 }
 
 export interface ImageInput {
+  id: string;
   base64: string;
   mimeType: string;
   previewUrl: string;
@@ -23,8 +24,9 @@ export interface SingleRawInput {
   rawText: string;
   language: PostLanguage;
   postLength: PostLengthPreference;
+  postCount: number; // 1 to 5, default 1
   ctaValue?: string;
-  imageFile?: ImageInput;
+  imageFiles?: ImageInput[];
 }
 
 export interface GeneratedPost {
@@ -39,7 +41,7 @@ export interface GeneratedPost {
   lengthType: 'short' | 'medium' | 'detailed';
   language: PostLanguage;
   createdAt: string;
-  imageUrl?: string;
+  imageUrls?: string[];
 }
 
 export interface FacebookConfig {

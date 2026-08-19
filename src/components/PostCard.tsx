@@ -33,7 +33,7 @@ interface PostCardProps {
 export const PostCard: React.FC<PostCardProps> = ({
   post,
   fbConfig,
-  fbPageName = 'My Business Page',
+  fbPageName = 'gadgetbro',
   fbPagePicture,
   onSavePost,
   onOpenSettings,
@@ -215,13 +215,13 @@ export const PostCard: React.FC<PostCardProps> = ({
           {fbPagePicture ? (
             <img src={fbPagePicture} alt={fbPageName} />
           ) : (
-            <div className="avatar-placeholder">{fbPageName.charAt(0).toUpperCase()}</div>
+            <div className="avatar-placeholder">{(fbPageName || 'gadgetbro').charAt(0).toUpperCase()}</div>
           )}
         </div>
 
         <div className="fb-user-info">
           <div className="fb-name-row">
-            <span className="fb-page-name">{fbPageName}</span>
+            <span className="fb-page-name">{fbPageName || 'gadgetbro'}</span>
             <span className="fb-verified-badge">✓</span>
           </div>
           <div className="fb-time-row">
@@ -246,10 +246,14 @@ export const PostCard: React.FC<PostCardProps> = ({
         )}
       </div>
 
-      {/* Attached Product Photo Mockup if uploaded */}
-      {post.imageUrl && (
-        <div className="fb-attached-image-wrapper">
-          <img src={post.imageUrl} alt="Attached Product" className="fb-attached-image" />
+      {/* Attached Product Photos Grid / Strip if uploaded */}
+      {post.imageUrls && post.imageUrls.length > 0 && (
+        <div className={`fb-attached-grid-wrapper count-${Math.min(post.imageUrls.length, 4)}`}>
+          {post.imageUrls.map((url, idx) => (
+            <div key={idx} className="attached-img-item">
+              <img src={url} alt={`Product attachment ${idx + 1}`} />
+            </div>
+          ))}
         </div>
       )}
 

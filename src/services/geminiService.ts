@@ -62,15 +62,19 @@ export const generateSingleFBPost = async (
   const promptText = buildSinglePostPrompt(input, strategyDef, businessInfo);
   const models = ['gemini-3.6-flash', 'gemini-2.5-flash', 'gemini-1.5-flash'];
 
-  // Construct parts array for text + optional image vision
+  // Construct parts array for text + optional multiple images
   const partsArray: unknown[] = [];
 
-  if (input.imageFile && input.imageFile.base64) {
-    partsArray.push({
-      inlineData: {
-        mimeType: input.imageFile.mimeType,
-        data: input.imageFile.base64,
-      },
+  if (input.imageFiles && input.imageFiles.length > 0) {
+    input.imageFiles.forEach((img) => {
+      if (img.base64) {
+        partsArray.push({
+          inlineData: {
+            mimeType: img.mimeType,
+            data: img.base64,
+          },
+        });
+      }
     });
   }
 
@@ -137,11 +141,13 @@ const buildSinglePostPrompt = (
 ): string => {
   const languageGuide = {
     bn: 'Standard persuasive Bangladeshi E-Commerce Facebook Post style in clean Bengali (বাংলা).',
-    banglish: 'Banglish (Bengali written in English letters).',
+    'bn-en-mix':
+      'Bangla & English Code-Switched Mix (Very popular for Bangladeshi Facebook e-commerce: write Bengali sentences mixed with key English terms like "High Quality", "Limited Stock", "Offer Price", "Cash on Delivery", "Inbox Us", etc.).',
+    banglish: 'Banglish (Bengali written in English letters, e.g., "Apnar jonno niye elam shera product...").',
     en: 'Professional English Facebook copy tailored for e-commerce sales.',
   }[input.language];
 
-  const pageName = input.pageName || businessInfo?.pageName || 'My Facebook Business Page';
+  const pageName = input.pageName.trim() || businessInfo?.pageName || 'gadgetbro';
 
   let storeDetailsText = `PAGE / STORE NAME: ${pageName}\n`;
   if (businessInfo) {
@@ -174,9 +180,10 @@ const buildSinglePostPrompt = (
       'LENGTH CONSTRAINT: WRITE A DETAILED & IN-DEPTH POST. Provide rich storytelling or thorough feature breakdown.';
   }
 
-  const imageInstruction = input.imageFile
-    ? 'IMAGE ANALYSIS INSTRUCTION: Analyze the attached product image visually! Describe its colors, design, visual appeal, package details, or specs shown in the image and incorporate them naturally into the post.'
-    : '';
+  const imageInstruction =
+    input.imageFiles && input.imageFiles.length > 0
+      ? `IMAGE ANALYSIS INSTRUCTION: Analyze the ${input.imageFiles.length} attached product image(s) visually! Describe colors, design, visual appeal, packaging, or specs shown in the image(s) and incorporate them naturally into the post.`
+      : '';
 
   return `
 You are an expert E-Commerce Copywriter and Facebook Marketing Specialist.
@@ -225,7 +232,7 @@ const cleanAndFormatPost = (
 
   // Strip emojis
   cleaned = cleaned.replace(
-    /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu,
+    /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu,
     ''
   );
 
@@ -251,6 +258,8 @@ const cleanAndFormatPost = (
       ? 'detailed'
       : strategyDef.defaultLength;
 
+  const imageUrls = input.imageFiles?.map((img) => img.previewUrl) || [];
+
   return {
     id: `post-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
     headline: headline.replace(/[*#]/g, '').trim(),
@@ -263,6 +272,6 @@ const cleanAndFormatPost = (
     lengthType: targetLength,
     language: input.language,
     createdAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    imageUrl: input.imageFile?.previewUrl,
+    imageUrls,
   };
 };
