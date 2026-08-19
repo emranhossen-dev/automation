@@ -1,6 +1,6 @@
 import React from 'react';
-import type { SingleRawInput, PostLanguage, BusinessInfo, PostLengthPreference, ImageInput } from '../types';
-import { Languages, Link as LinkIcon, Building2, Store, Square, AlignLeft, Send, Image as ImageIcon, X, Plus, Layers, Settings } from 'lucide-react';
+import type { SingleRawInput, PostLanguage, PostLengthPreference, ImageInput } from '../types';
+import { Languages, Link as LinkIcon, Store, Square, AlignLeft, Send, Image as ImageIcon, X, Plus, Layers } from 'lucide-react';
 
 interface ProductFormProps {
   input: SingleRawInput;
@@ -14,8 +14,6 @@ interface ProductFormProps {
     percentage: number;
     strategyName: string;
   } | null;
-  businessInfo: BusinessInfo;
-  onOpenSettings: () => void;
 }
 
 export const ProductForm: React.FC<ProductFormProps> = ({
@@ -24,33 +22,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   onGenerate,
   onStop,
   isLoading,
-  businessInfo,
-  onOpenSettings,
 }) => {
-  const handleAppendBusinessInfo = () => {
-    const parts = [];
-    if (businessInfo.pageName) parts.push(`Page: ${businessInfo.pageName}`);
-    if (businessInfo.phone) parts.push(`Phone: ${businessInfo.phone}`);
-    if (businessInfo.whatsapp) parts.push(`WhatsApp: ${businessInfo.whatsapp}`);
-    if (businessInfo.websiteUrl) parts.push(`Website: ${businessInfo.websiteUrl}`);
-    if (businessInfo.defaultOrderNote) parts.push(`Order Note: ${businessInfo.defaultOrderNote}`);
-
-    if (parts.length === 0) {
-      onOpenSettings();
-      return;
-    }
-
-    if (businessInfo.pageName && (!input.pageName || input.pageName === 'gadgetbro')) {
-      setInput((prev) => ({ ...prev, pageName: businessInfo.pageName }));
-    }
-
-    const businessText = `\n\n--- Store Contact Info ---\n${parts.join('\n')}`;
-    setInput((prev) => ({
-      ...prev,
-      rawText: prev.rawText + businessText,
-    }));
-  };
-
   const handleMultipleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
@@ -92,29 +64,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({
     }));
   };
 
-  const hasBusinessData =
-    Boolean(businessInfo.pageName) ||
-    Boolean(businessInfo.phone) ||
-    Boolean(businessInfo.websiteUrl) ||
-    Boolean(businessInfo.whatsapp);
-
   return (
     <div className="card-glass form-container compact-padding full-width-card">
-      {/* Header Action Row */}
-      <div className="form-header" style={{ justifyContent: 'flex-end' }}>
-        <div className="header-action-group">
-          <button
-            type="button"
-            className={`btn-preset btn-preset-business ${hasBusinessData ? 'active' : ''}`}
-            onClick={hasBusinessData ? handleAppendBusinessInfo : onOpenSettings}
-            disabled={isLoading}
-            title={hasBusinessData ? 'Append Saved Store Contact Info' : 'Click to configure store info'}
-          >
-            {hasBusinessData ? <Building2 size={13} /> : <Settings size={13} />}
-            <span>{hasBusinessData ? '+ Add Store Info' : 'Configure'}</span>
-          </button>
-        </div>
-      </div>
+
 
       <form onSubmit={(e) => { e.preventDefault(); onGenerate(); }} className="form-body">
         {/* MANDATORY FIELD 1: Page Name (Default: gadgetbro) */}

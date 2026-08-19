@@ -302,8 +302,6 @@ export function App() {
               onStop={handleStopGeneration}
               isLoading={isLoading}
               progressState={progressState}
-              businessInfo={businessInfo}
-              onOpenSettings={() => setActiveTab('settings')}
             />
 
             {/* Generated Posts Section */}
