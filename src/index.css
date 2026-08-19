@@ -156,15 +156,11 @@ body {
   display: block;
 }
 
-/* Glassmorphism Card Utility */
+/* Glassmorphism Card Utility - Seamless Single BG */
 .card-glass {
-  background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-main);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 /* Ultra Compact Header & Navbar */
@@ -594,7 +590,7 @@ body {
 
 /* Form Styles */
 .tab-settings-container {
-  padding: 1.5rem;
+  padding: 0;
 }
 
 .settings-header-row {
@@ -622,6 +618,12 @@ body {
 .settings-header-row p {
   font-size: 0.85rem;
   color: var(--text-muted);
+}
+
+/* Form Styles - Flat Unified BG */
+.form-container {
+  padding: 0;
+  margin-bottom: 1.5rem;
 }
 
 .form-header {
