@@ -1,18 +1,18 @@
 import React from 'react';
 import {
   Sparkles,
-  Store,
   UploadCloud,
   FileText,
   Sliders,
-  Send,
   Copy,
   Share2,
   ShieldCheck,
   Zap,
   CheckCircle2,
   ArrowRight,
-  PlayCircle
+  PlayCircle,
+  Settings,
+  Key
 } from 'lucide-react';
 
 interface TutorialViewProps {
@@ -23,57 +23,57 @@ export const TutorialView: React.FC<TutorialViewProps> = ({ onStartCreating }) =
   const steps = [
     {
       step: 1,
-      title: 'পেজ বা শপের নাম দিন (Facebook Page Name)',
-      icon: Store,
+      title: '১. সেটিংসে শপের তথ্য ও লোগো যুক্ত করা (Settings ⚙️)',
+      icon: Settings,
       color: '#6366f1',
       description:
-        'প্রথমে আপনার ফেসবুক পেজ বা ই-কমার্স ব্র্যান্ডের নাম দিন (যেমন: "gadgetbro")। পোস্টের নিচের ব্র্যান্ড নেম এবং Facebook Feed Mockup এ এই নামটিই যুক্ত হবে।',
-      tip: 'টিপস: একবার Config এ শপ ইনফো সেভ করে রাখলে সবসময় অটোমেটিক সেভ হয়ে থাকবে।',
+        'উপরে ডানপাশের Settings (⚙️) বাটনে ক্লিক করুন। "Saved Store Contact & Business Info" সেকশনে আপনার Store / Brand Logo আপলোড করুন, Business / Page Name এ শপের নাম (যেমন: gadgetbro) বসান, এবং Phone, WhatsApp, Website ও Order Note ইনপুট দিয়ে নিচে "Save All Config & Business Details" এ চাপ দিন।',
+      tip: 'টিপস: একবার সেভ করলে প্রতিবার পোস্ট করার সময় এগুলো অটোমেটিক যোগ হয়ে যাবে!',
     },
     {
       step: 2,
-      title: 'প্রডাক্টের ছবি ড্র্যাগ & ড্রপ বা Ctrl + V চেপে পেস্ট করুন',
-      icon: UploadCloud,
+      title: '২. Gemini AI Key & Facebook Page Token সেটআপ',
+      icon: Key,
       color: '#06b6d4',
       description:
-        'আপনার ডিভাইসের যেকোনো ফাইল সরাসরি টেনে এনে ড্রপ করুন অথবা কিবোর্ডে Ctrl + V চেপে যেকোনো জায়গা থেকে কপি করা প্রডাক্টের ছবি পেস্ট করুন। Gemini AI ভিশন টেকনোলজি দিয়ে ছবিগুলোর কালার, ডিজাইন ও আউটলুক বিশ্লেষণ করবে।',
-      tip: 'টিপস: একসাথে একাধিক ছবি আপলোড করতে পারবেন।',
+        'Settings এর "Your Personal Google Gemini AI Key" ফিল্ডে aistudio.google.com থেকে নেওয়া ফ্রি API Key বসান। সরাসরি ফেসবুকে পোস্ট করতে চাইলে "Facebook Direct Post Settings" ফিল্ডে Page ID ও Access Token বসিয়ে "Test Page Connection" চেক করুন।',
+      tip: 'টিপস: আপনার নিজের Gemini API Key বসালে আপনি প্রতিদিন অনলিমিটেড পোস্ট ফ্রিতে তৈরি করতে পারবেন।',
     },
     {
       step: 3,
-      title: 'প্রডাক্টের সংক্ষেপ বিবরণ বা দাম লিখুন (Product Specs)',
-      icon: FileText,
+      title: '৩. প্রডাক্টের ছবি আপলোড, ড্র্যাগ & ড্রপ বা Ctrl + V পেস্ট',
+      icon: UploadCloud,
       color: '#f59e0b',
       description:
-        'প্রডাক্টের মডেল, অফার প্রাইজ, ডিসকাউন্ট বা বিশেষ কোনো টেকনিক্যাল ফিচার থাকলে সংক্ষেপে লিখুন। আপনি চাইলে র কাস্টমার চ্যাট কপি-পেস্টও করে দিতে পারেন!',
-      tip: 'টিপস: লেখা না দিয়ে কেবল ছবি দিয়েও এআই পোস্ট তৈরি করতে পারে।',
+        'হোম পেজে এসে প্রডাক্টের ছবি ড্র্যাগ করে ড্রপজোনে ছেড়ে দিন অথবা ফটো ব্রাউজ করুন। অথবা অন্য যেকোনো জায়গা থেকে ছবি কপি করে এনে ব্রাউজারে থাকা অবস্থায় কিবোর্ডে Ctrl + V চাপুন! ছবি স্বয়ংক্রিয়ভাবে যুক্ত হয়ে যাবে।',
+      tip: 'টিপস: একসাথে একাধিক ছবি দিলে Gemini AI ভিশন দিয়ে ছবির কালার ও ডিজাইন দেখে মানানসই কপি লিখবে।',
     },
     {
       step: 4,
-      title: 'পোস্টের সংখ্যা, দৈর্ঘ্য এবং ভাষা বেছে নিন',
-      icon: Sliders,
+      title: '৪. প্রডাক্টের অফার প্রাইজ ও বিবরণ লিখুন (Product Specs)',
+      icon: FileText,
       color: '#ec4899',
       description:
-        'একসাথে ১ থেকে ৫টি পর্যন্ত বিভিন্ন মার্কেটিং স্ট্রেটেজির পোস্ট সিলেক্ট করুন। ভাষা হিসেবে বাংলা, Bangla-English Mix, Banglish বা English বেছে নেওয়ার সুযোগ আছে।',
-      tip: 'টিপস: বাংলাদেশি কাস্টমারদের জন্য "Bangla & English Mix" সবচেয়ে বেশি সেল আনে!',
+        '"Product Details / Raw Notes" এর বড় বক্সে প্রডাক্টের নাম, অফার প্রাইজ, ডিসকাউন্ট, সাইজ বা ডেলিভারি ফিচার যা ইচ্ছা টাইপ করুন বা পেস্ট করুন।',
+      tip: 'টিপস: ফিল্ডটি বড় করা হয়েছে যেন লম্বা কাস্টমার মেসেজ বা ক্যাটালগ সহজেই পেস্ট করা যায়।',
     },
     {
       step: 5,
-      title: '"Generate Post" বাটনে ক্লিক করুন',
-      icon: Send,
+      title: '৫. পোস্টের সংখ্যা (১-৫), সাইজ ও ভাষা বেছে নিয়ে Generate চাপুন',
+      icon: Sliders,
       color: '#10b981',
       description:
-        'এআই ইঞ্জিন ব্যাকএন্ড প্রক্সির মাধ্যমে সিকিউরলি Gemini Model কল করে কয়েক সেকেন্ডেই সম্পূর্ণ তৈরি পোস্ট তৈরি করবে।',
-      tip: 'টিপস: আপনার জন্য সম্পূর্ণ ফ্রিতে দৈনিক ৩টি ট্রায়াল পোস্ট তৈরি করার সুবিধা থাকবে।',
+        '"Number of Posts" ফিল্ড থেকে একসাথে ১ থেকে ৫টি পোস্ট এবং "Language" ফিল্ডে "Bangla & English Mix" বেছে নিন। তারপর "Generate Post" বাটনে ক্লিক করুন।',
+      tip: 'টিপস: এআই লাইভ কাস্টম সাইবার হ্যালোগ্রাফিক স্পিনারে আপনাকে পোস্ট তৈরির অগ্রগতি দেখাবে।',
     },
     {
       step: 6,
-      title: '১-ক্লিকে কপি বা সরাসরি Facebook পেজে পোস্ট করুন!',
+      title: '৬. 1-Click Copy বা সরাসরি Facebook পেজে পোস্ট করুন',
       icon: Copy,
       color: '#8b5cf6',
       description:
-        'তৈরি হওয়া পোস্টগুলো রিয়েলটাইম Facebook Feed Mockup এ প্রিভিউ দেখুন। "1-Click Copy" বাটনে চাপ দিয়ে হুবহু কপি করুন অথবা পেজ টোকেন দিয়ে সরাসরি পেজে পাবলিশ করুন।',
-      tip: 'টিপস: যেকোনো পোস্ট এডিট করতে চাইলে Edit বাটনে চাপ দিয়ে টেক্সট কাস্টমাইজ করতে পারবেন।',
+        'ডানপাশের রিয়েলটাইম Facebook Feed Mockup এ পোস্টের প্রিভিউ দেখুন। "1-Click Copy" বাটনে চাপ দিলে পুরো টেক্সট কপি হয়ে যাবে। আর Token দেওয়া থাকলে "Post to FB Page" এ চাপলে সরাসরি আপনার ফেসবুক পেজে পোস্ট হয়ে যাবে!',
+      tip: 'টিপs: যেকোনো সময় এডিট করতে Edit বাটন এবং ভবিষ্যতের জন্য সেভ করে রাখতে Save বাটন ব্যবহার করুন।',
     },
   ];
 
@@ -84,11 +84,11 @@ export const TutorialView: React.FC<TutorialViewProps> = ({ onStartCreating }) =
         <div className="tutorial-hero-content">
           <span className="hero-pill-badge">
             <Sparkles size={14} className="icon-gold" />
-            সহজ গাইডলাইন ও ব্যবহারের টিউটোরিয়াল
+            সহজ গাইডলাইন ও স্ট্যাপ-বাই-স্ট্যাপ ব্যবহারে নির্দেশনা
           </span>
-          <h2>কীভাবে Post Maker ব্যবহার করে কয়েক সেকেন্ডে সেলস পোস্ট বানাবেন?</h2>
+          <h2>কীভাবে Post Maker ব্যবহার করে খুব সহজে সেলস পোস্ট তৈরি করবেন?</h2>
           <p>
-            নিচের ধাপগুলো অনুসরণ করে আপনার ই-কমার্স বিজনেসের জন্য হাই-কনভার্টিং ফেসবুক পোস্ট জেনারেট করুন:
+            কোন অপশনে কী বসাবেন এবং কীভাবে সেটআপ করবেন—সম্পূর্ণ তথ্য নিচে ধাপে ধাপে দেয়া হলো:
           </p>
 
           <button className="btn-primary btn-start-now" onClick={onStartCreating}>
@@ -131,8 +131,8 @@ export const TutorialView: React.FC<TutorialViewProps> = ({ onStartCreating }) =
         <div className="summary-item">
           <Zap size={18} className="icon-gold" />
           <div>
-            <h4>হাই-কনভার্টিং কপিরাইটিং</h4>
-            <p>AIDA ও PAS মার্কেটিং ফ্রেমওয়ার্কে তৈরি পোস্ট</p>
+            <h4>কপিরাইটিং স্ট্র্যাটেজি</h4>
+            <p>AIDA ও PAS সেলস ফ্রেমওয়ার্কে চমৎকার পোস্ট</p>
           </div>
         </div>
 
