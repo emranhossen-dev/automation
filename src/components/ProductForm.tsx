@@ -1,6 +1,6 @@
 import React from 'react';
 import type { SingleRawInput, PostLanguage, BusinessInfo, PostLengthPreference, ImageInput } from '../types';
-import { Languages, FileText, Link as LinkIcon, Building2, Store, Square, AlignLeft, Send, Image as ImageIcon, X, Plus, Layers, Settings } from 'lucide-react';
+import { Languages, Link as LinkIcon, Building2, Store, Square, AlignLeft, Send, Image as ImageIcon, X, Plus, Layers, Settings } from 'lucide-react';
 
 interface ProductFormProps {
   input: SingleRawInput;
@@ -100,13 +100,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 
   return (
     <div className="card-glass form-container compact-padding full-width-card">
-      {/* Header Row: Title on Left, Configure button on Right */}
-      <div className="form-header">
-        <div className="form-title-group">
-          <FileText className="icon-gold" size={18} />
-          <h2>Post Generator Input</h2>
-        </div>
-
+      {/* Header Action Row */}
+      <div className="form-header" style={{ justifyContent: 'flex-end' }}>
         <div className="header-action-group">
           <button
             type="button"

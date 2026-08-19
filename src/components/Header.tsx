@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileText, Bookmark, Settings } from 'lucide-react';
+import { Home, Bookmark, Settings } from 'lucide-react';
 
 interface HeaderProps {
   onOpenSettings?: () => void;
@@ -16,37 +16,36 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="header-container compact">
       <div className="header-content">
-        <div className="brand-group">
-          <h1 className="brand-title">AI</h1>
+        {/* Left: Home Icon + Post Maker Name */}
+        <div
+          className="brand-group"
+          onClick={() => setActiveTab('create')}
+          style={{ cursor: 'pointer' }}
+          title="Home - Post Maker"
+        >
+          <Home size={18} className="brand-home-icon" />
+          <h1 className="brand-title">Post Maker</h1>
         </div>
 
+        {/* Right: Saved & Settings Only */}
         <div className="tab-navigation inline-tabs">
-          <button
-            className={`tab-btn ${activeTab === 'create' ? 'active' : ''}`}
-            onClick={() => setActiveTab('create')}
-            title="Generator"
-          >
-            <FileText size={14} />
-            <span className="tab-label">Generator</span>
-          </button>
-
           <button
             className={`tab-btn ${activeTab === 'history' ? 'active' : ''}`}
             onClick={() => setActiveTab('history')}
             title="Saved Posts"
           >
-            <Bookmark size={14} />
-            <span className="tab-label">Posts</span>
+            <Bookmark size={15} />
+            <span className="tab-label">Saved</span>
             {savedCount > 0 && <span className="badge-count">{savedCount}</span>}
           </button>
 
           <button
             className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
             onClick={() => setActiveTab('settings')}
-            title="Config & Settings"
+            title="Settings"
           >
-            <Settings size={14} />
-            <span className="tab-label">Config</span>
+            <Settings size={15} />
+            <span className="tab-label">Settings</span>
           </button>
         </div>
       </div>

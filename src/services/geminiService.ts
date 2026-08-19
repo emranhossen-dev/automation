@@ -47,17 +47,21 @@ export const generateSingleFBPost = async (
   userApiKey?: string,
   signal?: AbortSignal
 ): Promise<GeneratedPost> => {
-  const apiKey =
+  const customKey =
     userApiKey?.trim() ||
     localStorage.getItem('gemini_api_key') ||
-    import.meta.env.VITE_GEMINI_API_KEY ||
-    import.meta.env.GEMINI_API_KEY;
+    '';
 
-  if (!apiKey) {
-    throw new Error(
-      'No Gemini API Key found. Please enter your API Key in Config.'
-    );
-  }
+  const clientFallbackKey =
+    import.meta.env.VITE_GEMINI_API_KEY ||
+    import.meta.env.GEMINI_API_KEY ||
+    '';
+
+  const proxyUrl =
+    import.meta.env.VITE_PROXY_URL ||
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:5000/api/generate'
+      : '/api/generate');
 
   const promptText = buildSinglePostPrompt(input, strategyDef, businessInfo);
   const models = ['gemini-3.6-flash', 'gemini-2.5-flash', 'gemini-1.5-flash'];
@@ -83,52 +87,105 @@ export const generateSingleFBPost = async (
   let rawText = '';
   let lastError = '';
 
-  for (const model of models) {
-    if (signal?.aborted) {
-      throw new Error('Generation cancelled by user.');
-    }
-
-    try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            contents: [
-              {
-                parts: partsArray,
-              },
-            ],
-            generationConfig: {
-              temperature: 0.7,
-              maxOutputTokens: 2048,
-            },
-          }),
-          signal,
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
-        rawText = data.candidates[0].content.parts[0].text;
-        break;
-      } else if (data.error?.message) {
-        lastError = data.error.message;
-      }
-    } catch (e: unknown) {
-      if (signal?.aborted || (e instanceof Error && e.name === 'AbortError')) {
+  // 1. Try Fastify Proxy Endpoint First (Fastify handles Key Hiding & IP Rate Limiting)
+  try {
+    for (const model of models) {
+      if (signal?.aborted) {
         throw new Error('Generation cancelled by user.');
       }
-      lastError = e instanceof Error ? e.message : 'Network failure.';
+
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (customKey) {
+        headers['x-user-api-key'] = customKey;
+      }
+
+      const proxyRes = await fetch(proxyUrl, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          contents: [{ parts: partsArray }],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 2048,
+          },
+          model,
+          userApiKey: customKey,
+        }),
+        signal,
+      });
+
+      const proxyData = await proxyRes.json();
+
+      if (proxyRes.status === 429) {
+        // IP Rate Limit Exceeded!
+        throw new Error(
+          proxyData.message ||
+            'আপনার দৈনিক ৩ বারের ফ্রি ট্রায়াল সীমা শেষ হয়ে গেছে! আনলিমিটেড পোস্ট তৈরি করতে Config এ আপনার নিজস্ব Gemini API Key বসান।'
+        );
+      }
+
+      if (proxyRes.ok && proxyData.candidates?.[0]?.content?.parts?.[0]?.text) {
+        rawText = proxyData.candidates[0].content.parts[0].text;
+        break;
+      } else if (proxyData.message || proxyData.error) {
+        lastError = proxyData.message || proxyData.error;
+      }
+    }
+  } catch (err: unknown) {
+    if (signal?.aborted || (err instanceof Error && err.name === 'AbortError')) {
+      throw new Error('Generation cancelled by user.');
+    }
+    // If it's a rate limit error, rethrow immediately
+    if (err instanceof Error && err.message.includes('ট্রায়াল সীমা')) {
+      throw err;
+    }
+    lastError = err instanceof Error ? err.message : 'Proxy connection failed.';
+  }
+
+  // 2. Direct Fallback if Proxy Server is offline and client has key
+  if (!rawText && (customKey || clientFallbackKey)) {
+    const activeKey = customKey || clientFallbackKey;
+    for (const model of models) {
+      if (signal?.aborted) {
+        throw new Error('Generation cancelled by user.');
+      }
+
+      try {
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${activeKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: partsArray }],
+              generationConfig: { temperature: 0.7, maxOutputTokens: 2048 },
+            }),
+            signal,
+          }
+        );
+
+        const data = await response.json();
+        if (response.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+          rawText = data.candidates[0].content.parts[0].text;
+          break;
+        } else if (data.error?.message) {
+          lastError = data.error.message;
+        }
+      } catch (e: unknown) {
+        if (signal?.aborted || (e instanceof Error && e.name === 'AbortError')) {
+          throw new Error('Generation cancelled by user.');
+        }
+        lastError = e instanceof Error ? e.message : 'Network failure.';
+      }
     }
   }
 
   if (!rawText) {
-    throw new Error(`Gemini API Error: ${lastError || 'Could not connect to Gemini models.'}`);
+    throw new Error(
+      `Gemini Proxy / API Error: ${lastError || 'Could not connect to Fastify Proxy Server or Gemini models.'}`
+    );
   }
 
   return cleanAndFormatPost(rawText, strategyDef, input);
