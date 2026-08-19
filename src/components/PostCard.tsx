@@ -150,19 +150,19 @@ export const PostCard: React.FC<PostCardProps> = ({
   };
 
   const cleanStrategyBadgeLabels: Record<string, string> = {
-    'problem-solving': 'Problem-Solving (PAS)',
-    'hard-sell': 'Direct Hard Sell & Offer',
-    storytelling: 'Storytelling & Lifestyle',
-    'feature-spotlight': 'Feature & Quality Spotlight',
-    'customer-review': 'Customer Trust & Review',
+    'hard-sell': 'Direct',
+    'problem-solving': 'Problem-Solving',
+    storytelling: 'Storytelling',
+    'feature-spotlight': 'Spotlight',
+    'customer-review': 'Review',
   };
 
   const renderLengthBadge = () => {
     if (post.lengthType === 'short') {
       return (
-        <span className="badge-length short" title="Short & Punchy Copy">
+        <span className="badge-length short" title="Short Copy">
           <Zap size={11} />
-          <span>Short & Punchy</span>
+          <span>Short</span>
         </span>
       );
     } else if (post.lengthType === 'detailed') {

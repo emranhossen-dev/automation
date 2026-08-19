@@ -150,12 +150,12 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           <div className="label-row-with-badge">
             <label className="form-label">
               <UploadCloud size={15} className="icon-indigo" />
-              <span>Product Photos (Drag & Drop or Paste with Ctrl+V)</span>
+              <span>Product Photos</span>
             </label>
             {input.imageFiles && input.imageFiles.length > 0 && (
               <span className="badge-photo-count">
                 <Sparkles size={12} className="icon-gold" />
-                {input.imageFiles.length} {input.imageFiles.length === 1 ? 'Photo' : 'Photos'} Attached
+                {input.imageFiles.length} {input.imageFiles.length === 1 ? 'Photo' : 'Photos'}
               </span>
             )}
           </div>
