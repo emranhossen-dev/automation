@@ -25,6 +25,19 @@
   --shadow-main: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(99, 102, 241, 0.05);
 }
 
+/* Global Invisible Scrollbar (Zero Double Scrollbars) */
+::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+  background: transparent !important;
+}
+
+html, body, *, ::-webkit-scrollbar {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE/Edge */
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -961,11 +974,9 @@ body {
   }
 
   .results-wrapper {
-    position: sticky;
-    top: 4.5rem;
-    max-height: calc(100vh - 6rem);
-    overflow-y: auto;
-    padding-right: 0.35rem;
+    position: relative;
+    max-height: none !important;
+    overflow-y: visible !important;
   }
 
   .results-wrapper::-webkit-scrollbar {
@@ -2207,14 +2218,15 @@ body {
   color: #94a3b8;
 }
 
-/* Product Details Textarea Size Enhancement (60% Larger) */
+/* Product Details Textarea (Auto-expanding, Zero Inner Scrollbars) */
 .raw-input-textarea {
-  min-height: 290px !important;
-  height: 290px !important;
+  min-height: 280px !important;
   font-size: 0.9rem !important;
   line-height: 1.6 !important;
   padding: 1rem !important;
-  resize: vertical !important;
+  overflow: hidden !important;
+  resize: none !important;
+  transition: height 0.15s ease-out !important;
 }
 
 /* Tutorial Responsive Mobile Optimizations */

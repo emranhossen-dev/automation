@@ -28,6 +28,18 @@ export const BannerStudioModal: React.FC<BannerStudioModalProps> = ({
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
+  // Lock body scroll when modal is open to eliminate double scrollbars
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   // Render on canvas whenever inputs change
   useEffect(() => {
     if (!isOpen || !imageUrl) return;

@@ -252,10 +252,14 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           </label>
           <textarea
             className="form-textarea raw-input-textarea"
-            rows={12}
+            rows={10}
             placeholder="Paste or type raw product specs, offer price, delivery notes, or press Ctrl+V to paste content..."
             value={input.rawText}
-            onChange={(e) => setInput((prev) => ({ ...prev, rawText: e.target.value }))}
+            onChange={(e) => {
+              setInput((prev) => ({ ...prev, rawText: e.target.value }));
+              e.target.style.height = 'auto';
+              e.target.style.height = `${Math.max(280, e.target.scrollHeight)}px`;
+            }}
             disabled={isLoading}
           />
         </div>
