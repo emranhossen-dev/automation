@@ -18,6 +18,73 @@ interface ProductFormProps {
   } | null;
 }
 
+const compressImageFile = (
+  file: File,
+  maxDimension = 1200,
+  quality = 0.82
+): Promise<{ base64: string; mimeType: string; previewUrl: string }> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxDimension || height > maxDimension) {
+          if (width > height) {
+            height = Math.round((height * maxDimension) / width);
+            width = maxDimension;
+          } else {
+            width = Math.round((width * maxDimension) / height);
+            height = maxDimension;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          const rawResult = e.target?.result as string;
+          resolve({
+            base64: rawResult.split(',')[1] || '',
+            mimeType: file.type || 'image/jpeg',
+            previewUrl: rawResult,
+          });
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const mimeType = 'image/jpeg';
+        const compressedBase64 = canvas.toDataURL(mimeType, quality);
+        const base64 = compressedBase64.split(',')[1] || '';
+
+        resolve({
+          base64,
+          mimeType,
+          previewUrl: compressedBase64,
+        });
+      };
+      img.onerror = () => {
+        const rawResult = e.target?.result as string;
+        resolve({
+          base64: rawResult.split(',')[1] || '',
+          mimeType: file.type || 'image/jpeg',
+          previewUrl: rawResult,
+        });
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => {
+      resolve({ base64: '', mimeType: 'image/jpeg', previewUrl: '' });
+    };
+    reader.readAsDataURL(file);
+  });
+};
+
 export const ProductForm: React.FC<ProductFormProps> = ({
   input,
   setInput,
@@ -28,49 +95,44 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [selectedStudioImg, setSelectedStudioImg] = useState<{ id: string; url: string } | null>(null);
 
-  const processImageFiles = (files: File[]) => {
+  const processImageFiles = async (files: File[]) => {
     const validImages = files.filter((f) => f.type.startsWith('image/'));
     if (validImages.length === 0) return;
 
-    const newImages: ImageInput[] = [];
-    let processed = 0;
+    try {
+      const compressedResults = await Promise.all(
+        validImages.map((file) => compressImageFile(file, 1200, 0.82))
+      );
 
-    validImages.forEach((file) => {
-      const mimeType = file.type || 'image/jpeg';
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        const base64 = result.split(',')[1] || '';
-        newImages.push({
+      const newImages: ImageInput[] = compressedResults
+        .filter((r) => r.base64.length > 0)
+        .map((res) => ({
           id: `img-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-          base64,
-          mimeType,
-          previewUrl: result,
-        });
+          base64: res.base64,
+          mimeType: res.mimeType,
+          previewUrl: res.previewUrl,
+        }));
 
-        processed++;
-        if (processed === validImages.length) {
-          setInput((prev) => ({
-            ...prev,
-            imageFiles: [...(prev.imageFiles || []), ...newImages],
-          }));
+      if (newImages.length === 0) return;
 
-          Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'success',
-            title: `Added ${newImages.length} ${newImages.length === 1 ? 'Product Photo' : 'Product Photos'}!`,
-            showConfirmButton: false,
-            timer: 2000,
-            background: '#1e293b',
-            color: '#fff',
-          });
-        }
-      };
+      setInput((prev) => ({
+        ...prev,
+        imageFiles: [...(prev.imageFiles || []), ...newImages],
+      }));
 
-      reader.readAsDataURL(file);
-    });
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: `Added ${newImages.length} ${newImages.length === 1 ? 'Product Photo' : 'Product Photos'}!`,
+        showConfirmButton: false,
+        timer: 2000,
+        background: '#1e293b',
+        color: '#fff',
+      });
+    } catch (err) {
+      console.error('Image processing failed:', err);
+    }
   };
 
   const handleMultipleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
