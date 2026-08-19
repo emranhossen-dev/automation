@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { SingleRawInput, PostLanguage, PostLengthPreference, ImageInput } from '../types';
 import { Languages, Link as LinkIcon, Store, Square, AlignLeft, Send, UploadCloud, X, Layers, Sparkles } from 'lucide-react';
+import { BannerStudioModal } from './BannerStudioModal';
 import Swal from 'sweetalert2';
 
 interface ProductFormProps {
@@ -25,6 +26,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   isLoading,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
+  const [selectedStudioImg, setSelectedStudioImg] = useState<{ id: string; url: string } | null>(null);
 
   const processImageFiles = (files: File[]) => {
     const validImages = files.filter((f) => f.type.startsWith('image/'));
@@ -200,6 +202,17 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                   <div className="thumb-overlay">
                     <button
                       type="button"
+                      className="btn-studio-thumb"
+                      onClick={() => setSelectedStudioImg({ id: img.id, url: img.previewUrl })}
+                      disabled={isLoading}
+                      title="Make Promo Banner / Add Code"
+                    >
+                      <Sparkles size={12} className="icon-gold" />
+                      <span>Banner</span>
+                    </button>
+
+                    <button
+                      type="button"
                       className="btn-delete-thumb"
                       onClick={() => handleRemoveSingleImage(img.id)}
                       disabled={isLoading}
@@ -212,6 +225,23 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                 </div>
               ))}
             </div>
+          )}
+
+          {/* Promo Banner Studio Modal */}
+          {selectedStudioImg && (
+            <BannerStudioModal
+              isOpen={!!selectedStudioImg}
+              onClose={() => setSelectedStudioImg(null)}
+              imageUrl={selectedStudioImg.url}
+              onSaveBanner={(newUrl) => {
+                setInput((prev) => ({
+                  ...prev,
+                  imageFiles: prev.imageFiles?.map((f) =>
+                    f.id === selectedStudioImg.id ? { ...f, previewUrl: newUrl } : f
+                  ),
+                }));
+              }}
+            />
           )}
         </div>
 

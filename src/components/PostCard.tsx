@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { GeneratedPost, FacebookConfig } from '../types';
 import { publishPostToFacebook } from '../services/facebookService';
+import { BannerStudioModal } from './BannerStudioModal';
 import Swal from 'sweetalert2';
 import {
   Copy,
@@ -18,7 +19,8 @@ import {
   AlertCircle,
   Zap,
   AlignLeft,
-  FileText
+  FileText,
+  Sparkles
 } from 'lucide-react';
 
 interface PostCardProps {
@@ -50,6 +52,8 @@ export const PostCard: React.FC<PostCardProps> = ({
     error?: string;
   } | null>(null);
   const [isSaved, setIsSaved] = useState(false);
+  const [attachedImages, setAttachedImages] = useState<string[]>(post.imageUrls || []);
+  const [selectedBannerImg, setSelectedBannerImg] = useState<{ idx: number; url: string } | null>(null);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(postText);
@@ -249,14 +253,39 @@ export const PostCard: React.FC<PostCardProps> = ({
       </div>
 
       {/* Attached Product Photos Grid / Strip if uploaded */}
-      {post.imageUrls && post.imageUrls.length > 0 && (
-        <div className={`fb-attached-grid-wrapper count-${Math.min(post.imageUrls.length, 4)}`}>
-          {post.imageUrls.map((url, idx) => (
+      {attachedImages && attachedImages.length > 0 && (
+        <div className={`fb-attached-grid-wrapper count-${Math.min(attachedImages.length, 4)}`}>
+          {attachedImages.map((url, idx) => (
             <div key={idx} className="attached-img-item">
               <img src={url} alt={`Product attachment ${idx + 1}`} />
+              <button
+                type="button"
+                className="btn-overlay-banner-studio"
+                onClick={() => setSelectedBannerImg({ idx, url })}
+                title="Add Code / Price Badge to Image"
+              >
+                <Sparkles size={11} className="icon-gold" />
+                <span>Banner Studio</span>
+              </button>
             </div>
           ))}
         </div>
+      )}
+
+      {/* Banner Studio Modal */}
+      {selectedBannerImg && (
+        <BannerStudioModal
+          isOpen={!!selectedBannerImg}
+          onClose={() => setSelectedBannerImg(null)}
+          imageUrl={selectedBannerImg.url}
+          storeName={fbPageName}
+          storeLogoUrl={storeLogoUrl || fbPagePicture}
+          onSaveBanner={(newUrl) => {
+            const updated = [...attachedImages];
+            updated[selectedBannerImg.idx] = newUrl;
+            setAttachedImages(updated);
+          }}
+        />
       )}
 
       {/* FB Post Action Bar Mockup */}
