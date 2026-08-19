@@ -267,7 +267,7 @@ export const BannerStudioModal: React.FC<BannerStudioModalProps> = ({
         <div className="modal-header">
           <div className="modal-title-group">
             <Sparkles className="icon-gold" size={20} />
-            <h2>AI Promotional Banner & Code Overlay Studio</h2>
+            <h2>AI Banner Studio</h2>
           </div>
           <button className="btn-close" onClick={onClose}>
             <X size={20} />
@@ -357,7 +357,7 @@ export const BannerStudioModal: React.FC<BannerStudioModalProps> = ({
                 checked={includeLogo}
                 onChange={(e) => setIncludeLogo(e.target.checked)}
               />
-              <label htmlFor="include-logo-chk">Include Store Logo Stamp on Banner</label>
+              <label htmlFor="include-logo-chk">Include Store Logo Stamp</label>
             </div>
           </div>
 

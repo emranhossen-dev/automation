@@ -2352,18 +2352,22 @@ body {
   position: relative;
 }
 
-/* Mobile Responsiveness & Strict 1-Line Non-wrapping Enforcement */
+/* Mobile Responsiveness & Strict Fluidity Enforcement (No Clipping) */
 @media (max-width: 640px) {
+  .main-container {
+    padding: 0.5rem 0.4rem !important;
+  }
+
   .header-container {
-    padding: 0.5rem 0.5rem !important;
+    padding: 0.5rem 0.35rem !important;
   }
 
   .header-content {
-    gap: 0.15rem !important;
+    gap: 0.1rem !important;
   }
 
   .brand-title {
-    font-size: 0.95rem !important;
+    font-size: 0.9rem !important;
   }
 
   .inline-tabs {
@@ -2372,30 +2376,57 @@ body {
   }
 
   .tab-btn {
-    padding: 0.2rem 0.35rem !important;
-    font-size: 0.725rem !important;
-    gap: 0.15rem !important;
+    padding: 0.2rem 0.3rem !important;
+    font-size: 0.7rem !important;
+    gap: 0.1rem !important;
     white-space: nowrap !important;
   }
 
-  .banner-studio-modal {
-    width: 98vw !important;
-    padding: 0.75rem !important;
-    max-height: 94vh !important;
+  .modal-overlay {
+    padding: 0.35rem !important;
+    box-sizing: border-box !important;
+  }
+
+  .banner-studio-modal,
+  .modal-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0.75rem 0.5rem !important;
+    margin: 0 !important;
+    border-radius: 10px !important;
+    box-sizing: border-box !important;
+    max-height: 95vh !important;
     overflow-y: auto !important;
   }
 
   .banner-studio-grid {
     grid-template-columns: 1fr !important;
-    gap: 0.75rem !important;
+    gap: 0.65rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .studio-controls-panel {
+    padding: 0.65rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .form-group,
+  .form-input,
+  .form-select,
+  .form-textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .canvas-wrapper {
-    max-height: 240px !important;
+    max-height: 220px !important;
   }
 
   .banner-live-canvas {
-    max-height: 220px !important;
+    max-height: 200px !important;
   }
 
   .modal-footer {
@@ -2405,7 +2436,7 @@ body {
   }
 
   .modal-footer button {
-    padding: 0.35rem 0.55rem !important;
+    padding: 0.35rem 0.5rem !important;
     font-size: 0.725rem !important;
     white-space: nowrap !important;
   }
@@ -2416,8 +2447,18 @@ body {
   }
 
   .btn-action {
-    padding: 0.55rem 0.4rem !important;
-    font-size: 0.75rem !important;
+    padding: 0.55rem 0.35rem !important;
+    font-size: 0.725rem !important;
+    white-space: nowrap !important;
+  }
+
+  .checkbox-row {
+    font-size: 0.725rem !important;
+    white-space: nowrap !important;
+  }
+
+  .modal-title-group h2 {
+    font-size: 0.9rem !important;
     white-space: nowrap !important;
   }
 }
