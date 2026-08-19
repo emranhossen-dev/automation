@@ -31,6 +31,15 @@
   padding: 0;
 }
 
+html, body {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
 body {
   font-family: 'Inter', 'Hind Siliguri', -apple-system, BlinkMacSystemFont, sans-serif;
   background-color: var(--bg-dark);
@@ -44,6 +53,12 @@ body {
 }
 
 /* Base Layout & App Container */
+#root, .app-layout, .main-container, .single-input-layout, .form-container, .results-wrapper, .fb-post-mockup, .empty-preview-card, .history-container {
+  overflow-x: hidden !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
 .app-layout {
   display: flex;
   flex-direction: column;
@@ -2192,13 +2207,14 @@ body {
   color: #94a3b8;
 }
 
-/* Product Details Textarea Size Enhancement */
+/* Product Details Textarea Size Enhancement (60% Larger) */
 .raw-input-textarea {
-  min-height: 180px;
-  font-size: 0.875rem;
-  line-height: 1.6;
-  padding: 0.85rem;
-  resize: vertical;
+  min-height: 290px !important;
+  height: 290px !important;
+  font-size: 0.9rem !important;
+  line-height: 1.6 !important;
+  padding: 1rem !important;
+  resize: vertical !important;
 }
 
 /* Tutorial Responsive Mobile Optimizations */

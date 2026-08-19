@@ -252,7 +252,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           </label>
           <textarea
             className="form-textarea raw-input-textarea"
-            rows={7}
+            rows={12}
             placeholder="Paste or type raw product specs, offer price, delivery notes, or press Ctrl+V to paste content..."
             value={input.rawText}
             onChange={(e) => setInput((prev) => ({ ...prev, rawText: e.target.value }))}
