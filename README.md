@@ -1,4 +1,4 @@
-# Post Generator AI (Facebook Automation System) 🚀
+# Post Generator AI (Facebook Automation System) 
 
 An advanced, mobile-responsive **E-Commerce Facebook Business Page Post Automation Platform** built with **React 19, TypeScript, Vite, SweetAlert2, and Google Gemini Multimodal AI**.
 
